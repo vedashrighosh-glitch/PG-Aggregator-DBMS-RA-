@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RoomAdda — Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06070F;--s1:#0F1120;--s2:#151829;--s3:#1C2035;
+  --bd:rgba(255,255,255,0.05);--bd2:rgba(255,255,255,0.09);--bd3:rgba(255,255,255,0.15);
+  --orange:#FF5B1F;--og2:#FF7A40;--og-glow:rgba(255,91,31,0.25);--og-dim:rgba(255,91,31,0.10);
+  --green:#00E5A0;--gn-dim:rgba(0,229,160,0.10);--gn-glow:rgba(0,229,160,0.25);
+  --red:#FF4466;--rd-dim:rgba(255,68,102,0.10);--rd-mid:rgba(255,68,102,0.20);
+  --blue:#4A9EFF;--bl-dim:rgba(74,158,255,0.10);
+  --purple:#9B7FFF;--pr-dim:rgba(155,127,255,0.10);
+  --yellow:#FFD166;--yl-dim:rgba(255,209,102,0.10);
+  --text:#F0F2FF;--text2:#8890B0;--text3:#454870;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+  --topbar-h:56px;--sidebar-w:248px;--r:10px;--rs:6px;
+  --tr:all 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+body.light{
+  --bg:#F2F4FF;--s1:#FFFFFF;--s2:#F0F2FF;--s3:#E8EBFF;
+  --bd:rgba(0,0,60,0.07);--bd2:rgba(0,0,60,0.12);--bd3:rgba(0,0,60,0.20);
+  --text:#0B0C22;--text2:#55597A;--text3:#9090B8;
+  --og-dim:rgba(255,91,31,0.08);--gn-dim:rgba(0,229,160,0.08);
+  --rd-dim:rgba(255,68,102,0.08);--bl-dim:rgba(74,158,255,0.08);
+  --pr-dim:rgba(155,127,255,0.08);--yl-dim:rgba(255,209,102,0.08);
+}
+body.light .topbar{background:rgba(242,244,255,0.94)!important;border-bottom-color:rgba(0,0,60,0.10)}
+body.light .sidebar{background:#FFFFFF;border-right:1px solid rgba(0,0,60,0.08)}
+body.light .sb-inp{background:#FFFFFF;border-color:rgba(0,0,60,0.12);color:#0B0C22}
+body.light .sb-inp::placeholder{color:#9090B8}
+body.light .sb-inp option{background:#FFFFFF}
+body.light .kpi{background:#FFFFFF;border-color:rgba(0,0,60,0.08)}
+body.light .tcard{background:#FFFFFF;border-color:rgba(0,0,60,0.08)}
+body.light thead th{background:#F0F2FF;color:#9090B8;border-bottom-color:rgba(0,0,60,0.10)}
+body.light tbody tr:hover{background:#F0F2FF}
+body.light .mbox{background:#FFFFFF;border-color:rgba(0,0,60,0.12)}
+body.light .ff input,body.light .ff select,body.light .ff textarea{background:#F4F5FF;border-color:rgba(0,0,60,0.12);color:#0B0C22}
+body.light .ff input::placeholder,body.light .ff textarea::placeholder{color:#9090B8}
+body.light .ff select option{background:#FFFFFF}
+body.light .mbtn.mgh{background:#F0F2FF;border-color:rgba(0,0,60,0.12);color:#55597A}
+body.light .agent-item{background:#F4F5FF;border-color:rgba(0,0,60,0.08)}
+body.light #toast{background:#FFFFFF;border-color:rgba(0,0,60,0.12);color:#0B0C22}
+body.light .del-name{background:#F0F2FF;border-color:rgba(0,0,60,0.12)}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+button,input,select,textarea{font-family:var(--font);outline:none}
+.hidden{display:none!important}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(255,91,31,0.06),transparent 60%),
+             radial-gradient(ellipse 50% 60% at 85% 80%,rgba(74,158,255,0.05),transparent 55%)}
+body.light::before{display:none}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--topbar-h);
+  background:rgba(6,7,15,0.93);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd2);
+  display:flex;align-items:center;padding:0 20px;gap:0}
+.tb-logo{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-0.5px;flex-shrink:0;margin-right:20px}
+.tb-logo em{color:var(--orange);font-style:normal}
+.tb-sep{width:1px;height:16px;background:var(--bd2);flex-shrink:0}
+.tb-page{font-size:11px;font-family:var(--mono);color:var(--text3);margin-left:14px;text-transform:uppercase;letter-spacing:.1em}
+.nav-pills{display:flex;gap:2px;margin-left:12px}
+.npill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;color:var(--text2);border:1px solid transparent;transition:var(--tr);white-space:nowrap;text-decoration:none;cursor:pointer}
+.npill:hover{color:var(--text);background:var(--s2);border-color:var(--bd2)}
+.npill.active{color:var(--orange);background:var(--og-dim);border-color:rgba(255,91,31,.3)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+#last-sync{font-size:10px;color:var(--text3);font-family:var(--mono)}
+#count-badge{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tb-btn{padding:7px 14px;border-radius:var(--rs);background:var(--s2);border:1px solid var(--bd2);color:var(--text2);font-size:12px;font-weight:600;transition:var(--tr);cursor:pointer}
+.tb-btn:hover{color:var(--text);border-color:var(--bd3)}
+.tb-btn.theme{background:transparent;border-color:var(--bd);font-size:14px;padding:6px 10px}
+.tb-btn.theme:hover{border-color:var(--orange);color:var(--orange)}
+.tb-btn.prim{background:var(--orange);color:#fff;border-color:var(--orange)}
+.tb-btn.prim:hover{background:var(--og2);box-shadow:0 4px 20px var(--og-glow)}
+
+/* ── LAYOUT ── */
+.page-shell{display:flex;height:calc(100vh - var(--topbar-h));margin-top:var(--topbar-h);overflow:hidden;position:relative;z-index:1}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:12px;transition:background .25s}
+.sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);display:block;margin-bottom:5px}
+.sb-inp{width:100%;padding:8px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--text);font-size:12.5px;transition:border-color .15s}
+.sb-inp:focus{border-color:var(--orange)}.sb-inp::placeholder{color:var(--text3)}
+select.sb-inp{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0l4 4 4-4z' fill='%23454870'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:24px}
+select.sb-inp option{background:var(--s2)}
+.sb-div{height:1px;background:var(--bd)}
+.sb-clear{width:100%;padding:8px;border-radius:var(--rs);background:transparent;border:1px solid var(--bd);color:var(--text3);font-size:12px;font-weight:600;transition:var(--tr);cursor:pointer}
+.sb-clear:hover{color:var(--red);border-color:rgba(255,68,102,.35)}
+.phone-box{background:rgba(255,91,31,.07);border:1px solid rgba(255,91,31,.2);border-radius:var(--r);padding:10px;display:flex;gap:6px}
+.phone-box .sb-inp{flex:1}
+.btn-go{padding:8px 11px;border-radius:var(--rs);background:var(--orange);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:var(--tr);white-space:nowrap}
+.btn-go:hover{background:var(--og2)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow:auto;padding:18px 20px 48px}
+.kpi-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 18px;flex:1;min-width:100px;position:relative;overflow:hidden;transition:var(--tr)}
+.kpi:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kc,var(--orange));opacity:0;transition:opacity .2s}
+.kpi:hover::after{opacity:1}
+.kpi-v{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--kc,var(--text));line-height:1}
+.kpi-l{font-size:10px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.08em}
+.kpi.ko{--kc:var(--orange)}.kpi.kg{--kc:var(--green)}.kpi.kb{--kc:var(--blue)}.kpi.kp{--kc:var(--purple)}.kpi.ky{--kc:var(--yellow)}.kpi.kr{--kc:var(--red)}
+
+/* ── TABLE ── */
+.tcard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:background .25s}
+.tcard-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.tcard-title{font-size:14px;font-weight:700;color:var(--text)}
+.tcard-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:960px}
+thead th{
+  background:var(--s2);
+  padding:10px 12px;
+  text-align:left;
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:var(--text3);
+  text-transform:uppercase;
+  border-bottom:1px solid var(--bd2);
+  white-space:nowrap;
+  position:sticky;top:0;z-index:1;
+  font-family:var(--mono)
+}
+tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--s2)}
+td{padding:10px 12px;vertical-align:middle}
+
+/* ── ROW ACTIONS ── */
+.ra{display:flex;gap:3px;justify-content:flex-end}
+.ra-b{width:28px;height:28px;border-radius:var(--rs);background:transparent;border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text3);cursor:pointer;transition:var(--tr);flex-shrink:0}
+.ra-e:hover{color:var(--orange);background:var(--og-dim);border-color:rgba(255,91,31,.3)}
+.ra-t:hover{color:var(--purple);background:var(--pr-dim);border-color:rgba(155,127,255,.3)}
+.ra-v:hover{color:var(--green);background:var(--gn-dim);border-color:rgba(0,229,160,.3)}
+.ra-d:hover{color:var(--red);background:var(--rd-dim);border-color:rgba(255,68,102,.3)}
+
+/* ── PILLS ── */
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;letter-spacing:.03em}
+.pn{background:var(--gn-dim);color:var(--green);border:1px solid rgba(0,229,160,.25)}
+.pv{background:var(--bl-dim);color:var(--blue);border:1px solid rgba(74,158,255,.25)}
+.pne{background:var(--yl-dim);color:var(--yellow);border:1px solid rgba(255,209,102,.25)}
+.pc{background:var(--gn-dim);color:var(--green);border:1px solid rgba(0,229,160,.3)}
+.ps{background:var(--pr-dim);color:var(--purple);border:1px solid rgba(155,127,255,.25)}
+.pco{background:rgba(160,210,100,.1);color:#a0d264;border:1px solid rgba(160,210,100,.25)}
+.pm{background:var(--og-dim);color:var(--orange);border:1px solid rgba(255,91,31,.25)}
+.pf{background:var(--bl-dim);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
+.pff{background:rgba(240,100,180,.1);color:#f064b4;border:1px solid rgba(240,100,180,.25)}
+
+/* ── LOADER / EMPTY ── */
+.loader{display:flex;align-items:center;justify-content:center;height:160px;gap:8px;color:var(--text3);font-size:13px}
+.spin{width:16px;height:16px;border:2px solid var(--bd2);border-top-color:var(--orange);border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-s{text-align:center;padding:56px;color:var(--text3)}
+.empty-s h3{font-size:15px;font-weight:700;color:var(--text);margin:12px 0 6px}
+
+/* ── MODALS (shared base) ── */
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);z-index:400;align-items:center;justify-content:center;padding:20px}
+.mover.open{display:flex}
+.mbox{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r);padding:26px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;position:relative;animation:popIn .2s cubic-bezier(.16,1,.3,1);transition:background .25s}
+.mbox.sm{max-width:380px}
+.mbox.add-m{border-top:3px solid var(--orange)}
+.mbox.del-m{border-top:3px solid var(--red)}
+@keyframes popIn{from{transform:scale(.92) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.mtitle{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.mcls{width:28px;height:28px;border-radius:var(--rs);background:var(--s2);border:1px solid var(--bd);color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);flex-shrink:0;margin-left:10px}
+.mcls:hover{color:var(--text);background:var(--s3)}
+
+/* ── FORM GRID ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg .s2{grid-column:1/-1}
+.ff{display:flex;flex-direction:column;gap:5px}
+.ff label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-family:var(--mono)}
+.req{color:var(--orange)}
+.ff input,.ff select,.ff textarea{
+  width:100%;
+  padding:10px 13px;
+  background:var(--s2);
+  border:1px solid var(--bd2);
+  border-radius:var(--rs);
+  color:var(--text);
+  font-size:13.5px;
+  line-height:1.4;
+  transition:border-color .15s;
+}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--orange);outline:none;box-shadow:0 0 0 3px rgba(255,91,31,.12)}
+.ff input::placeholder,.ff textarea::placeholder{color:var(--text3)}
+.ff textarea{resize:vertical;min-height:72px}
+.ff select{
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0l4 4 4-4z' fill='%23454870'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;
+}
+.ff select option{background:var(--s2)}
+.sec-bar{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:4px 0}
+.sec-line{flex:1;height:1px;background:var(--bd)}
+.sec-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);font-family:var(--mono);white-space:nowrap}
+
+/* ── MODAL FOOTER / BUTTONS ── */
+.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
+.mbtn{padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;transition:var(--tr);border:none}
+.mgh{background:var(--s2);border:1px solid var(--bd2);color:var(--text2)}.mgh:hover{border-color:var(--bd3);color:var(--text)}
+.mprim{background:var(--orange);color:#fff}.mprim:hover{background:var(--og2);box-shadow:0 4px 16px var(--og-glow)}
+.mpur{background:var(--pr-dim);border:1px solid rgba(155,127,255,.35);color:var(--purple)}.mpur:hover{background:rgba(155,127,255,.2)}
+.mdgr{background:var(--gn-dim);border:1px solid rgba(0,229,160,.3);color:var(--green)}.mdgr:hover{background:rgba(0,229,160,.18)}
+.mdr{background:var(--rd-dim);border:1px solid var(--rd-mid);color:var(--red)}.mdr:hover{background:rgba(255,68,102,.18)}
+.moran{background:var(--og-dim);border:1px solid rgba(255,91,31,.35);color:var(--orange)}.moran:hover{background:rgba(255,91,31,.18)}
+
+/* ── EDIT MODAL SPECIFIC ── */
+.mbox.edit-m{border-top:3px solid var(--orange);max-width:680px}
+.edit-lead-info{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--og-dim);border:1px solid rgba(255,91,31,.2);border-radius:var(--rs);margin-bottom:20px}
+.edit-lead-av{width:38px;height:38px;border-radius:10px;background:var(--og-dim);border:1px solid rgba(255,91,31,.3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--orange);flex-shrink:0}
+.edit-lead-name{font-size:14px;font-weight:800;color:var(--text)}
+.edit-lead-phone{font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:2px}
+
+/* ── ALLOT MODAL ── */
+.agent-list{display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto;margin:10px 0}
+.agent-item{display:flex;align-items:center;gap:12px;padding:10px 13px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:var(--tr)}
+.agent-item:hover,.agent-item.sel{background:var(--pr-dim);border-color:rgba(155,127,255,.4)}
+.agent-av{width:32px;height:32px;border-radius:8px;background:var(--pr-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.agent-n{font-size:13px;font-weight:700;color:var(--text)}
+.agent-r{font-size:11px;color:var(--text3)}
+.agent-chk{margin-left:auto;width:17px;height:17px;border-radius:50%;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:9px;transition:var(--tr)}
+.agent-item.sel .agent-chk{background:var(--purple);border-color:var(--purple);color:#fff}
+.vsec{background:rgba(155,127,255,.06);border:1px solid rgba(155,127,255,.15);border-radius:var(--r);padding:14px;margin:12px 0}
+.vsec-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);font-family:var(--mono);margin-bottom:10px;display:block}
+
+/* ── DELETE MODAL ── */
+.del-name{background:var(--s2);border:1px solid var(--bd2);border-radius:var(--rs);padding:11px 14px;font-size:13px;font-weight:700;color:var(--text);margin:12px 0}
+.del-warn{font-size:12px;color:var(--text3);line-height:1.6}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s2);border:1px solid var(--bd2);border-radius:99px;padding:10px 22px;font-size:13px;font-weight:600;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:999;transition:transform .28s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.tok{border-color:rgba(0,229,160,.35);color:var(--green)}
+#toast.tfail{border-color:rgba(255,68,102,.35);color:var(--red)}
+
+@media(max-width:768px){.sidebar{display:none}.nav-pills{display:none}.main{padding:14px 12px 40px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-logo">Room<em>Adda</em></div>
+  <div class="tb-sep"></div>
+  <span class="tb-page">Leads</span>
+  <div class="nav-pills">
+    <a class="npill" id="np-portal" href="#" target="_blank">👤 Portal</a>
+    <a class="npill active" href="#">🎯 Leads</a>
+    <a class="npill" id="np-cust" href="#" target="_blank">🤝 Customers</a>
+    <a class="npill" id="np-fin" href="#" target="_blank">💰 Finance</a>
+    <a class="npill" id="np-pg" href="#" target="_blank">🏠 PG</a>
+  </div>
+  <div class="tb-right">
+    <span id="last-sync"></span>
+    <span id="count-badge"></span>
+    <button class="tb-btn theme" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="tb-btn" onclick="loadData(false)">↻ Sync</button>
+    <button class="tb-btn prim" onclick="openAdd()">+ Add Lead</button>
+  </div>
+</div>
+
+<div class="page-shell">
+  <aside class="sidebar">
+    <div>
+      <span class="sb-lbl">🔍 Find by phone</span>
+      <div class="phone-box">
+        <input class="sb-inp" id="f-ph-s" type="tel" placeholder="9876543210"/>
+        <button class="btn-go" onclick="searchByPhone()">Go</button>
+      </div>
+    </div>
+    <div><span class="sb-lbl">Search name / phone</span><input class="sb-inp" id="f-name" placeholder="Name or number…" oninput="filter()"/></div>
+    <div>
+      <span class="sb-lbl">Budget ₹</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <input class="sb-inp" id="f-bmin" type="number" placeholder="Min" oninput="filter()"/>
+        <input class="sb-inp" id="f-bmax" type="number" placeholder="Max" oninput="filter()"/>
+      </div>
+    </div>
+    <div class="sb-div"></div>
+    <div><span class="sb-lbl">Gender</span>
+      <select class="sb-inp" id="f-gender" onchange="filter()">
+        <option value="All">All</option><option>Male</option><option>Female</option>
+      </select>
+    </div>
+    <div><span class="sb-lbl">Status</span>
+      <select class="sb-inp" id="f-status" onchange="filter()">
+        <option value="All">All</option><option>New</option><option>Visited</option>
+        <option>Negotiating</option><option>Converted</option>
+        <option>Visit Scheduled</option><option>Contacted</option>
+      </select>
+    </div>
+    <div><span class="sb-lbl">Source</span>
+      <select class="sb-inp" id="f-source" onchange="filter()">
+        <option value="All">All Sources</option>
+        <option>WhatsApp</option><option>Website</option><option>Referral</option>
+        <option>JustDial</option><option>Walk-in</option><option>Other</option>
+      </select>
+    </div>
+    <div><span class="sb-lbl">Handled By</span>
+      <input class="sb-inp" id="f-att" placeholder="Priya, Rajesh…" oninput="filter()"/>
+    </div>
+    <div class="sb-div"></div>
+    <button class="sb-clear" onclick="clearF()">✕ Clear Filters</button>
+  </aside>
+
+  <main class="main">
+    <div class="kpi-row">
+      <div class="kpi ko"><div class="kpi-v" id="sv-total">—</div><div class="kpi-l">Total Leads</div></div>
+      <div class="kpi kg"><div class="kpi-v" id="sv-new">—</div><div class="kpi-l">New</div></div>
+      <div class="kpi kp"><div class="kpi-v" id="sv-sched">—</div><div class="kpi-l">Scheduled</div></div>
+      <div class="kpi kb"><div class="kpi-v" id="sv-vis">—</div><div class="kpi-l">Visited</div></div>
+      <div class="kpi kg"><div class="kpi-v" id="sv-conv">—</div><div class="kpi-l">Converted</div></div>
+      <div class="kpi ky"><div class="kpi-v" id="sv-avg">—</div><div class="kpi-l">Avg Budget</div></div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-hdr">
+        <span class="tcard-title">Lead Pipeline</span>
+        <span class="tcard-sub" id="tbl-sub">Loading…</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--text3)">Click ✎ to edit a lead</span>
+      </div>
+      <div id="tbl-area"><div class="loader"><div class="spin"></div>&nbsp;Loading leads…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════ EDIT LEAD MODAL -->
+<div class="mover" id="m-edit" onclick="if(event.target===this)closeEdit()">
+  <div class="mbox edit-m">
+    <div class="mhdr">
+      <div class="mtitle">✎ Edit Lead</div>
+      <button class="mcls" onclick="closeEdit()">✕</button>
+    </div>
+    <!-- Lead identity banner -->
+    <div class="edit-lead-info">
+      <div class="edit-lead-av" id="edit-av">—</div>
+      <div>
+        <div class="edit-lead-name" id="edit-lname">—</div>
+        <div class="edit-lead-phone" id="edit-lphone">—</div>
+      </div>
+    </div>
+    <!-- Hidden identity fields (not editable) -->
+    <input type="hidden" id="em-name"/>
+    <input type="hidden" id="em-phone"/>
+    <!-- Editable fields -->
+    <div class="fg">
+      <div class="sec-bar"><div class="sec-line"></div><span class="sec-lbl">Lead Details</span><div class="sec-line"></div></div>
+
+      <div class="ff">
+        <label>Gender</label>
+        <select id="em-gender">
+          <option value="">— select —</option>
+          <option>Male</option><option>Female</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Source</label>
+        <select id="em-source">
+          <option value="">— select —</option>
+          <option>WhatsApp</option><option>Website</option><option>Referral</option>
+          <option>JustDial</option><option>Walk-in</option><option>Other</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Status</label>
+        <select id="em-lead_status">
+          <option>New</option><option>Visited</option><option>Negotiating</option>
+          <option>Converted</option><option>Visit Scheduled</option><option>Contacted</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Handled By</label>
+        <input id="em-attended_by" type="text" placeholder="e.g. Priya Singh"/>
+      </div>
+
+      <div class="sec-bar"><div class="sec-line"></div><span class="sec-lbl">Preferences</span><div class="sec-line"></div></div>
+
+      <div class="ff">
+        <label>Preferred PG</label>
+        <input id="em-preferred_pg" type="text" placeholder="e.g. Uma Boys PG"/>
+      </div>
+      <div class="ff">
+        <label>Preferred Area</label>
+        <input id="em-preferred_area" type="text" placeholder="e.g. Koramangala"/>
+      </div>
+      <div class="ff">
+        <label>Room Preference</label>
+        <select id="em-room_preference">
+          <option value="">— select —</option>
+          <option>Single</option><option>Double</option><option>Triple</option><option>Any</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Food Preference</label>
+        <select id="em-food_preference">
+          <option value="">— select —</option>
+          <option>Veg</option><option>Non-Veg</option><option>Both</option>
+        </select>
+      </div>
+
+      <div class="sec-bar"><div class="sec-line"></div><span class="sec-lbl">Budget & Timeline</span><div class="sec-line"></div></div>
+
+      <div class="ff">
+        <label>Min Budget ₹</label>
+        <input id="em-budget_min" type="number" placeholder="e.g. 5000"/>
+      </div>
+      <div class="ff">
+        <label>Max Budget ₹</label>
+        <input id="em-budget_max" type="number" placeholder="e.g. 15000"/>
+      </div>
+      <div class="ff s2">
+        <label>Expected Move-in</label>
+        <input id="em-expected_move_in" type="date"/>
+      </div>
+
+      <div class="sec-bar"><div class="sec-line"></div><span class="sec-lbl">Notes</span><div class="sec-line"></div></div>
+
+      <div class="ff s2">
+        <label>Comments / Notes</label>
+        <textarea id="em-comment_1" rows="3" placeholder="Any additional notes about this lead…"></textarea>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeEdit()">Cancel</button>
+      <button class="mbtn mprim" onclick="submitEdit()">💾 Save Changes</button>
+    </div>
+    <div id="edit-msg" style="margin-top:10px;font-size:12px;text-align:center;font-weight:600"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ALLOT MODAL -->
+<div class="mover" id="m-allot" onclick="if(event.target===this)closeAllot()">
+  <div class="mbox" style="border-top:3px solid var(--purple)">
+    <div class="mhdr"><div class="mtitle">🎯 Allot Visit</div><button class="mcls" onclick="closeAllot()">✕</button></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:14px" id="allot-sub">Customer: —</div>
+    <span class="sb-lbl">Select Field Agent</span>
+    <div class="agent-list" id="agent-list"><div class="loader" style="height:60px"><div class="spin"></div></div></div>
+    <div class="vsec">
+      <span class="vsec-lbl">Visit Details</span>
+      <div class="fg">
+        <div class="ff s2"><label>Visit Date &amp; Time <span class="req">*</span></label><input id="allot-dt" type="datetime-local"/></div>
+        <div class="ff"><label>Food Preference</label>
+          <select id="allot-food"><option value="">— select —</option><option>Veg</option><option>Non-Veg</option><option>Both</option></select>
+        </div>
+        <div class="ff"><label>Allotted By</label><input id="allot-by" placeholder="Your name…"/></div>
+        <div class="ff s2"><label>Note to Agent</label><textarea id="allot-note" rows="2" placeholder="e.g. Very serious buyer. Be on time."></textarea></div>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeAllot()">Cancel</button>
+      <button class="mbtn mpur" onclick="submitAllot()">📤 Send Allotment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ VISIT STATUS MODAL -->
+<div class="mover" id="m-vstatus" onclick="if(event.target===this)closeVS()">
+  <div class="mbox" style="max-width:400px;border-top:3px solid var(--green)">
+    <div class="mhdr"><div class="mtitle">✅ Visit Outcome</div><button class="mcls" onclick="closeVS()">✕</button></div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px" id="vs-sub">—</div>
+    <div class="ff" style="margin-bottom:10px"><label>Outcome</label>
+      <select id="vs-val">
+        <option value="done">✅ Visit Done</option>
+        <option value="postponed">📅 Postponed</option>
+        <option value="not_interested">❌ Not Interested</option>
+        <option value="no_show">🚫 No-Show</option>
+      </select>
+    </div>
+    <div class="ff"><label>Note (optional)</label><input id="vs-note" placeholder="Any notes…"/></div>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeVS()">Cancel</button>
+      <button class="mbtn mdgr" onclick="submitVS()">Update Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ADD LEAD MODAL -->
+<div class="mover" id="m-add" onclick="if(event.target===this)closeAdd()">
+  <div class="mbox add-m">
+    <div class="mhdr"><div class="mtitle">+ Add Lead</div><button class="mcls" onclick="closeAdd()">✕</button></div>
+    <div class="fg">
+      <div class="ff"><label>Name <span class="req">*</span></label><input id="a-name" placeholder="Jane Doe"/></div>
+      <div class="ff"><label>Phone <span class="req">*</span></label><input id="a-phone" type="tel" placeholder="9876543210"/></div>
+      <div class="ff"><label>Email</label><input id="a-email" type="email" placeholder="jane@example.com"/></div>
+      <div class="ff"><label>Gender</label>
+        <select id="a-gender"><option value="">—</option><option>Male</option><option>Female</option></select>
+      </div>
+      <div class="ff"><label>Source</label>
+        <select id="a-source"><option value="">—</option><option>WhatsApp</option><option>Website</option><option>Referral</option><option>JustDial</option><option>Walk-in</option><option>Other</option></select>
+      </div>
+      <div class="ff"><label>Status</label>
+        <select id="a-status"><option>New</option><option>Visited</option><option>Negotiating</option><option>Converted</option><option>Visit Scheduled</option><option>Contacted</option></select>
+      </div>
+      <div class="ff"><label>Preferred PG</label><input id="a-pg" placeholder="Uma Boys…"/></div>
+      <div class="ff"><label>Preferred Area</label><input id="a-area" placeholder="Koramangala…"/></div>
+      <div class="ff"><label>Room Preference</label>
+        <select id="a-room"><option value="">—</option><option>Single</option><option>Double</option><option>Triple</option><option>Any</option></select>
+      </div>
+      <div class="ff"><label>Food Preference</label>
+        <select id="a-food"><option value="">—</option><option>Veg</option><option>Non-Veg</option><option>Both</option></select>
+      </div>
+      <div class="ff"><label>Min Budget ₹</label><input id="a-bmin" type="number" placeholder="5000"/></div>
+      <div class="ff"><label>Max Budget ₹</label><input id="a-bmax" type="number" placeholder="20000"/></div>
+      <div class="ff"><label>Expected Move-in</label><input id="a-movein" type="date"/></div>
+      <div class="ff"><label>Handled By</label><input id="a-att" placeholder="Priya Singh…"/></div>
+      <div class="ff s2"><label>Comments</label><input id="a-comm" placeholder="Notes…"/></div>
+    </div>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeAdd()">Cancel</button>
+      <button class="mbtn mprim" onclick="submitAdd()">Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ DELETE MODAL -->
+<div class="mover" id="m-del">
+  <div class="mbox sm del-m">
+    <div class="mhdr"><div class="mtitle" style="color:var(--red)">Delete Lead?</div><button class="mcls" onclick="closeDel()">✕</button></div>
+    <p class="del-warn">Permanently deleting:</p>
+    <div class="del-name" id="del-lbl"></div>
+    <p class="del-warn">This cannot be undone.</p>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeDel()">Cancel</button>
+      <button class="mbtn mdr" onclick="doDel()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+// ── STATE ──────────────────────────────────────────────────────
+var ALL = [], SHOWN = [], DEL = null;
+var ALLOT_T = null, VS_T = null, SEL_AGENT = null, SALES_TEAM = [];
+var EDIT_LEAD = null; // currently editing lead object
+
+// Table columns — "BY" renamed to "HANDLED BY", no inline editing
+var COLS = [
+  {k:'gender',           lbl:'Gender',      w:'7%'},
+  {k:'source',           lbl:'Source',      w:'8%'},
+  {k:'preferred_area',   lbl:'Area',        w:'9%'},
+  {k:'preferred_pg',     lbl:'PG',          w:'10%'},
+  {k:'room_preference',  lbl:'Room',        w:'7%'},
+  {k:'budget_min',       lbl:'Min ₹',      w:'7%', money:true},
+  {k:'budget_max',       lbl:'Max ₹',      w:'7%', money:true},
+  {k:'lead_status',      lbl:'Status',      w:'10%', status:true},
+  {k:'attended_by',      lbl:'Handled By',  w:'10%'},
+  {k:'comment_1',        lbl:'Note',        w:'11%'},
+];
+
+// ── THEME ──────────────────────────────────────────────────────
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  var l = document.body.classList.contains('light');
+  var btn = g('theme-btn'); if(btn) btn.textContent = l ? '🌑' : '🌙';
+  localStorage.setItem('ra-theme', l ? 'light' : 'dark');
+}
+(function(){
+  if(localStorage.getItem('ra-theme') === 'light'){
+    document.body.classList.add('light');
+    window.addEventListener('DOMContentLoaded', function(){
+      var b = g('theme-btn'); if(b) b.textContent = '🌑';
+    });
+  }
+})();
+
+// ── LOAD DATA ──────────────────────────────────────────────────
+function loadData(silent) {
+  if (!silent) g('tbl-area').innerHTML = '<div class="loader"><div class="spin"></div>&nbsp;Loading leads…</div>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      try {
+        if (!res || res.status !== 'success') {
+          toast((res && res.message) || 'Failed to load leads', false);
+          g('tbl-area').innerHTML = '<div class="empty-s"><h3>Could not load leads</h3><p>' + (res && res.message || 'Unknown error') + '</p></div>';
+          return;
+        }
+        ALL = res.data || []; SHOWN = ALL.slice(); filter();
+        if (!silent) toast('✓ ' + ALL.length + ' leads loaded', true);
+        var el = g('last-sync'); if(el) el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      } catch(ex) {
+        g('tbl-area').innerHTML = '<div class="empty-s"><h3>Display error</h3><p>' + ex.message + '</p></div>';
+      }
+    })
+    .withFailureHandler(function(e) {
+      g('tbl-area').innerHTML = '<div class="empty-s"><h3>Server error</h3><p>' + e.message + '</p></div>';
+    })
+    .getAllLeads();
+}
+
+function loadSalesTeam(cb) {
+  if (SALES_TEAM.length > 0) { if(cb) cb(SALES_TEAM); return; }
+  try {
+    google.script.run
+      .withSuccessHandler(function(r) { SALES_TEAM = (r && r.status === 'success' && r.data) ? r.data : []; if(cb) cb(SALES_TEAM); })
+      .withFailureHandler(function() { SALES_TEAM = []; if(cb) cb([]); })
+      .getSalesTeam();
+  } catch(ex) { SALES_TEAM = []; if(cb) cb([]); }
+}
+
+window.onload = function(){
+  function getUrlParam(k){return new URLSearchParams(window.location.search).get(k)||''}
+  var _ROLE = '<?= roleParam ?>';
+  var _DEPT = '<?= deptParam ?>';
+
+  loadData(false);
+  setInterval(function(){loadData(true)},30000);
+
+  google.script.run
+    .withSuccessHandler(function(r){
+      if(!r||!r.success) return;
+      g('np-portal').href = r.urls.portal;
+      g('np-cust').href   = r.urls.customers;
+      g('np-fin').href    = r.urls.finance;
+      g('np-pg').href     = r.urls.pg;
+    })
+    .withFailureHandler(function(){})
+    .getNavUrls(_ROLE, _DEPT);
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')['m-allot','m-vstatus','m-add','m-del','m-edit'].forEach(function(id){g(id).classList.remove('open');});
+  });
+};
+
+// ── PHONE SEARCH ───────────────────────────────────────────────
+function searchByPhone() {
+  var ph = g('f-ph-s').value.trim(); if (!ph) { toast('Enter a phone number', false); return; }
+  toast('Searching…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') { toast((r && r.message) || 'Error', false); return; }
+      if (!r.data) { toast('No lead found with this number', false); return; }
+      var clean = ph.replace(/[^0-9]/g, '');
+      SHOWN = ALL.filter(function(x){ return String(x.phone||'').replace(/[^0-9]/g,'').includes(clean); });
+      renderStats(SHOWN); renderTable(SHOWN);
+      g('tbl-sub').textContent = 'Result: ' + ph;
+      g('count-badge').textContent = SHOWN.length + ' match';
+      toast('✓ Found: ' + r.data.name, true);
+    })
+    .withFailureHandler(function(e){ toast(e.message, false); })
+    .searchLeadByPhone(ph);
+}
+
+// ── FILTER ─────────────────────────────────────────────────────
+function filter() {
+  var name   = g('f-name').value.trim().toLowerCase();
+  var bmin   = parseFloat(g('f-bmin').value) || 0;
+  var bmax   = parseFloat(g('f-bmax').value) || Infinity;
+  var gender = g('f-gender').value;
+  var status = g('f-status').value;
+  var source = g('f-source').value;
+  var att    = g('f-att').value.trim().toLowerCase();
+  SHOWN = ALL.filter(function(r) {
+    if (name && !(s(r.name).toLowerCase().includes(name) || s(r.phone).includes(name))) return false;
+    var rmin = parseFloat(s(r.budget_min)) || 0, rmax = parseFloat(s(r.budget_max)) || Infinity;
+    if (bmin > 0 && rmax < bmin) return false;
+    if (bmax < Infinity && rmin > bmax) return false;
+    if (gender !== 'All' && s(r.gender).toLowerCase() !== gender.toLowerCase()) return false;
+    if (status !== 'All' && s(r.lead_status).toLowerCase() !== status.toLowerCase()) return false;
+    if (source !== 'All' && s(r.source).toLowerCase() !== source.toLowerCase()) return false;
+    if (att && !s(r.attended_by).toLowerCase().includes(att)) return false;
+    return true;
+  });
+  renderStats(SHOWN); renderTable(SHOWN);
+  var active = name || bmin > 0 || bmax < Infinity || gender !== 'All' || status !== 'All' || source !== 'All' || att;
+  g('tbl-sub').textContent = active ? (SHOWN.length + ' match filters') : ('All leads — ' + ALL.length + ' total');
+  g('count-badge').textContent = SHOWN.length === ALL.length ? (ALL.length + ' leads') : (SHOWN.length + ' / ' + ALL.length);
+}
+
+function clearF() {
+  ['f-name','f-bmin','f-bmax','f-att','f-ph-s'].forEach(function(id){ g(id).value = ''; });
+  g('f-gender').value = 'All'; g('f-status').value = 'All'; g('f-source').value = 'All';
+  SHOWN = ALL.slice(); renderStats(SHOWN); renderTable(SHOWN);
+  g('tbl-sub').textContent = 'All leads — ' + ALL.length + ' total';
+  g('count-badge').textContent = ALL.length + ' leads';
+}
+
+// ── STATS ──────────────────────────────────────────────────────
+function renderStats(rows) {
+  var nw = 0, sc = 0, vi = 0, co = 0;
+  rows.forEach(function(r) {
+    var st = s(r.lead_status).toLowerCase();
+    if (st === 'new') nw++;
+    else if (st === 'visit scheduled') sc++;
+    else if (st === 'visited') vi++;
+    else if (st === 'converted') co++;
+  });
+  var budgets = rows.map(function(r) {
+    var a = ((parseFloat(s(r.budget_min)) || 0) + (parseFloat(s(r.budget_max)) || 0)) / 2;
+    return a > 0 ? a : null;
+  }).filter(Boolean);
+  g('sv-total').textContent = rows.length || '0';
+  g('sv-new').textContent   = nw  || '0';
+  g('sv-sched').textContent = sc  || '0';
+  g('sv-vis').textContent   = vi  || '0';
+  g('sv-conv').textContent  = co  || '0';
+  g('sv-avg').textContent   = budgets.length ? '₹' + fmt(Math.round(budgets.reduce(function(a,b){return a+b}) / budgets.length)) : '₹0';
+}
+
+// ── TABLE ──────────────────────────────────────────────────────
+function renderTable(rows) {
+  var area = g('tbl-area');
+  if (!rows.length) {
+    area.innerHTML = '<div class="empty-s"><div style="font-size:38px">🔍</div><h3>No leads found</h3><p style="font-size:12px;margin-top:4px">Try adjusting your filters</p></div>';
+    return;
+  }
+  var ths = COLS.map(function(c){ return '<th style="width:' + c.w + '">' + c.lbl + '</th>'; }).join('');
+  var html = '<div class="tscroll"><table><thead><tr>'
+    + '<th style="width:13%">Name</th>'
+    + '<th style="width:10%">Phone</th>'
+    + ths
+    + '<th style="width:6%;text-align:right">Actions</th>'
+    + '</tr></thead><tbody>';
+  rows.forEach(function(r) { html += buildView(r); });
+  html += '</tbody></table></div>';
+  area.innerHTML = html;
+}
+
+function buildView(r) {
+  var key = mk(r.name, r.phone);
+  var cells = COLS.map(function(c) {
+    var v = r[c.k];
+    if (c.k === 'gender')      return '<td>' + gpill(v) + '</td>';
+    if (c.k === 'lead_status') return '<td>' + spill(v) + '</td>';
+    if (c.money)               return '<td style="font-family:var(--mono);font-size:11px;color:var(--text2)">' + (v ? '₹' + fmt(v) : '—') + '</td>';
+    return '<td style="font-size:12px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(v || '—') + '</td>';
+  }).join('');
+
+  var nE = esc(r.name), pE = esc(r.phone);
+  var isScheduled = s(r.lead_status).toLowerCase() === 'visit scheduled';
+
+  return '<tr>'
+    + '<td><strong style="font-size:13px">' + esc(r.name) + '</strong>'
+    + (r.attended_by ? '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(r.attended_by) + '</div>' : '')
+    + '</td>'
+    + '<td style="font-size:12px;color:var(--text2);font-family:var(--mono);white-space:nowrap">' + esc(r.phone) + '</td>'
+    + cells
+    + '<td style="text-align:right;padding-right:10px">'
+    +   '<div class="ra">'
+    +     '<button class="ra-b ra-e" title="Edit lead" onclick="openEdit(\'' + nE + '\',\'' + pE + '\')">✎</button>'
+    +     '<button class="ra-b ra-t" title="Allot visit" onclick="openAllot(\'' + nE + '\',\'' + pE + '\')">🎯</button>'
+    +     (isScheduled ? '<button class="ra-b ra-v" title="Visit outcome" onclick="openVS(\'' + nE + '\',\'' + pE + '\')">✅</button>' : '')
+    +     '<button class="ra-b ra-d" title="Delete" onclick="askDel(\'' + nE + '\',\'' + pE + '\')">✕</button>'
+    +   '</div>'
+    + '</td></tr>';
+}
+
+// ── EDIT LEAD MODAL ────────────────────────────────────────────
+function openEdit(name, phone) {
+  var r = ALL.find(function(x){ return mk(x.name, x.phone) === mk(name, phone); });
+  if (!r) { toast('Lead not found', false); return; }
+  EDIT_LEAD = r;
+
+  // Banner
+  g('edit-av').textContent    = (r.name || '?')[0].toUpperCase();
+  g('edit-lname').textContent = r.name || '—';
+  g('edit-lphone').textContent = r.phone || '—';
+
+  // Hidden identity
+  g('em-name').value  = r.name;
+  g('em-phone').value = r.phone;
+
+  // Populate editable fields
+  var fields = ['gender','source','lead_status','attended_by','preferred_pg','preferred_area',
+                'room_preference','food_preference','budget_min','budget_max',
+                'expected_move_in','comment_1'];
+  fields.forEach(function(k) {
+    var el = g('em-' + k);
+    if (el) el.value = r[k] || '';
+  });
+
+  g('edit-msg').textContent = '';
+  g('m-edit').classList.add('open');
+}
+
+function closeEdit() {
+  g('m-edit').classList.remove('open');
+  EDIT_LEAD = null;
+}
+
+function submitEdit() {
+  var name  = g('em-name').value;
+  var phone = g('em-phone').value;
+  if (!name || !phone) { toast('Missing lead identity', false); return; }
+
+  var payload = { name: name, phone: phone };
+  var fields = ['gender','source','lead_status','attended_by','preferred_pg','preferred_area',
+                'room_preference','food_preference','budget_min','budget_max',
+                'expected_move_in','comment_1'];
+  fields.forEach(function(k) {
+    var el = g('em-' + k);
+    if (el) payload[k] = el.value;
+  });
+
+  var msg = g('edit-msg');
+  msg.style.color = 'var(--text2)';
+  msg.textContent = 'Saving…';
+
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') {
+        msg.style.color = 'var(--red)';
+        msg.textContent = '❌ ' + (r && r.message || 'Save failed');
+        return;
+      }
+      // Update local cache
+      var idx = ALL.findIndex(function(x){ return mk(x.name, x.phone) === mk(name, phone); });
+      if (idx !== -1) Object.assign(ALL[idx], payload);
+      closeEdit();
+      filter();
+      toast('✓ Lead updated', true);
+    })
+    .withFailureHandler(function(e) {
+      msg.style.color = 'var(--red)';
+      msg.textContent = '❌ ' + e.message;
+    })
+    .updateLeadRow(payload);
+}
+
+// ── ALLOT ──────────────────────────────────────────────────────
+function openAllot(name, phone) {
+  ALLOT_T = {name:name, phone:phone}; SEL_AGENT = null;
+  g('allot-sub').textContent = 'Customer: ' + name + ' (' + phone + ')';
+  g('allot-dt').value = ''; g('allot-note').value = ''; g('allot-food').value = ''; g('allot-by').value = '';
+  g('m-allot').classList.add('open');
+  var al = g('agent-list');
+  al.innerHTML = '<div class="loader" style="height:60px"><div class="spin"></div></div>';
+  loadSalesTeam(function(team) {
+    if (!team.length) { al.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:12px">No sales team members found.</div>'; return; }
+    al.innerHTML = '';
+    team.forEach(function(a) {
+      var d = document.createElement('div'); d.className = 'agent-item';
+      d.innerHTML = '<div class="agent-av">' + a.name[0].toUpperCase() + '</div>'
+        + '<div><div class="agent-n">' + esc(a.name) + '</div><div class="agent-r">' + esc(a.role || 'Sales') + '</div></div>'
+        + '<div class="agent-chk">✓</div>';
+      d.onclick = function() {
+        document.querySelectorAll('.agent-item').forEach(function(i){ i.classList.remove('sel'); });
+        d.classList.add('sel'); SEL_AGENT = a;
+      };
+      al.appendChild(d);
+    });
+  });
+}
+function closeAllot() { g('m-allot').classList.remove('open'); ALLOT_T = null; SEL_AGENT = null; }
+function submitAllot() {
+  if (!ALLOT_T)     { toast('No lead selected', false); return; }
+  if (!SEL_AGENT)   { toast('Please select a field agent', false); return; }
+  var dt = g('allot-dt').value, by = g('allot-by').value.trim();
+  if (!dt) { toast('Set visit date and time', false); return; }
+  if (!by) { toast('Enter your name (allotted by)', false); return; }
+  toast('Allotting…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') { toast((r && r.message) || 'Failed', false); return; }
+      closeAllot(); toast('✓ ' + r.message, true);
+      setTimeout(function(){ loadData(true); }, 1200);
+    })
+    .withFailureHandler(function(e){ toast(e.message, false); })
+    .allotLead({
+      name: ALLOT_T.name, phone: ALLOT_T.phone,
+      allotted_to: SEL_AGENT.name, allotted_by: by,
+      visit_date_time: dt, office_note: g('allot-note').value.trim(),
+      food_preference: g('allot-food').value,
+      agent_email: SEL_AGENT.email || '', agent_phone: SEL_AGENT.phone || ''
+    });
+}
+
+// ── VISIT STATUS ───────────────────────────────────────────────
+function openVS(n, p) {
+  VS_T = {name:n, phone:p};
+  g('vs-sub').textContent = 'Customer: ' + n + ' (' + p + ')';
+  g('vs-val').value = 'done'; g('vs-note').value = '';
+  g('m-vstatus').classList.add('open');
+}
+function closeVS() { g('m-vstatus').classList.remove('open'); VS_T = null; }
+function submitVS() {
+  if (!VS_T) return; toast('Updating…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') { toast((r && r.message) || 'Failed', false); return; }
+      closeVS(); toast('✓ ' + r.message, true);
+      setTimeout(function(){ loadData(true); }, 800);
+    })
+    .withFailureHandler(function(e){ toast(e.message, false); })
+    .updateVisitStatus({name:VS_T.name, phone:VS_T.phone, visit_status:g('vs-val').value, outcome_note:g('vs-note').value.trim()});
+}
+
+// ── ADD LEAD ───────────────────────────────────────────────────
+function openAdd() { g('m-add').classList.add('open'); }
+function closeAdd() { g('m-add').classList.remove('open'); }
+function submitAdd() {
+  var payload = {
+    name: g('a-name').value.trim(), phone: g('a-phone').value.trim(),
+    email: g('a-email').value.trim(), gender: g('a-gender').value,
+    source: g('a-source').value, lead_status: g('a-status').value,
+    preferred_pg: g('a-pg').value.trim(), preferred_area: g('a-area').value.trim(),
+    room_preference: g('a-room').value, food_preference: g('a-food').value,
+    budget_min: g('a-bmin').value, budget_max: g('a-bmax').value,
+    expected_move_in: g('a-movein').value,
+    attended_by: g('a-att').value.trim(), comment_1: g('a-comm').value.trim()
+  };
+  if (!payload.name || !payload.phone) { toast('Name and Phone are required', false); return; }
+  toast('Saving…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') { toast((r && r.message) || 'Failed', false); return; }
+      closeAdd(); toast('✓ Lead added', true);
+      setTimeout(function(){ loadData(true); }, 1000);
+    })
+    .withFailureHandler(function(e){ toast(e.message, false); })
+    .addLeadRow(payload);
+}
+
+// ── DELETE ─────────────────────────────────────────────────────
+function askDel(n, p) {
+  DEL = {name:n, phone:p};
+  g('del-lbl').textContent = n + ' — ' + p;
+  g('m-del').classList.add('open');
+}
+function closeDel() { g('m-del').classList.remove('open'); DEL = null; }
+function doDel() {
+  if (!DEL) return; var d = DEL; closeDel(); toast('Deleting…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || r.status !== 'success') { toast((r && r.message) || 'Failed', false); return; }
+      ALL = ALL.filter(function(x){ return mk(x.name, x.phone) !== mk(d.name, d.phone); });
+      filter(); toast('✓ Deleted', true);
+    })
+    .withFailureHandler(function(e){ toast(e.message, false); })
+    .deleteLeadRow(d);
+}
+
+// ── UTILS ──────────────────────────────────────────────────────
+function mk(n, p)  { return s(n).trim().toLowerCase() + '||' + s(p).trim(); }
+function s(v)      { return (v || '').toString(); }
+function esc(v)    { return s(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmt(n)    { return Number(n).toLocaleString('en-IN'); }
+function g(id)     { return document.getElementById(id); }
+function toast(msg, ok) {
+  var t = g('toast'); t.textContent = msg;
+  t.className = ok ? 'tok' : 'tfail';
+  t.classList.add('show'); clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+function gpill(v) {
+  if (!v) return '—';
+  var m = {male:'pf', female:'pff'};
+  return '<span class="pill ' + (m[s(v).toLowerCase()] || '') + '">' + esc(v) + '</span>';
+}
+function spill(v) {
+  if (!v) return '—';
+  var m = {new:'pn', visited:'pv', negotiating:'pne', converted:'pc', 'visit scheduled':'ps', contacted:'pco'};
+  return '<span class="pill ' + (m[s(v).toLowerCase()] || 'pm') + '">' + esc(v) + '</span>';
+}
+</script>
+</body>
+</html>

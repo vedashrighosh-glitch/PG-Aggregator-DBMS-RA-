@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RoomAdda — PG Details</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root,[data-theme="dark"]{--bg:#0B0C10;--s1:#13151A;--s2:#1C1F27;--s3:#252830;--bd:#2A2D37;--accent:#FF6B2B;--a2:#E8950A;--text:#F0F0F0;--muted:#8B95A8;--green:#2FD69B;--red:#FF5F5F;--blue:#4B9EFF;--yellow:#FFD166;--r:8px;--r2:12px;--shadow:0 2px 12px rgba(0,0,0,0.4);--topbar-border:#2A2D37}
+[data-theme="light"]{--bg:#F4F5F7;--s1:#FFFFFF;--s2:#F0F2F5;--s3:#E8EBF0;--bd:#DDE1E9;--accent:#FF6B2B;--a2:#E8950A;--text:#1A1D23;--muted:#6B7280;--green:#059669;--red:#DC2626;--blue:#2563EB;--yellow:#D97706;--r:8px;--r2:12px;--shadow:0 2px 12px rgba(0,0,0,0.08);--topbar-border:#E5E7EB}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--s1)}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 22px;height:52px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200}
+.logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--accent)}
+.logo b{color:var(--text)}.sep{width:1px;height:18px;background:var(--bd)}
+.page-title{font-size:13px;font-weight:600;color:var(--muted)}
+.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+#count-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+.nav-pills{display:flex;gap:3px}
+.npill{display:flex;align-items:center;gap:4px;padding:4px 11px;border-radius:99px;font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;border:1px solid transparent;transition:all .15s;cursor:pointer;background:transparent;white-space:nowrap}
+.npill:hover{color:var(--blue);border-color:rgba(75,158,255,.3);background:rgba(75,158,255,.08)}
+.npill.active{color:var(--accent);border-color:rgba(255,107,43,.3);background:rgba(255,107,43,.1)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;height:calc(100vh - 52px);overflow:hidden}
+.sidebar{width:232px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);overflow-y:auto;padding:16px 13px;display:flex;flex-direction:column;gap:14px;transition:background .2s}
+.main{flex:1;overflow:auto;padding:18px 20px}
+.flabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+input,select{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);color:var(--text);padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--muted)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238B95A8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px;cursor:pointer;appearance:none}
+select option{background:var(--s2)}
+.divider{height:1px;background:var(--bd);margin:2px 0}
+
+/* ── BUDGET FILTER ── */
+.budget-wrap{position:relative}
+.budget-wrap input{padding-left:28px}
+.budget-prefix{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--muted);pointer-events:none;font-weight:600}
+.budget-hint{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.4}
+.budget-active .budget-prefix{color:var(--accent)}
+.budget-active input{border-color:var(--accent);background:rgba(255,107,43,.05)}
+
+/* ── PROPERTY SEARCH CLEAR ── */
+.search-wrap{position:relative}
+.search-clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0;width:16px;height:16px;display:none;align-items:center;justify-content:center;border-radius:50%;transition:color .15s}
+.search-clear:hover{color:var(--accent)}
+.search-clear.visible{display:flex}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 15px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#e05a20}
+.btn-ghost{background:transparent;border:1px solid var(--bd);color:var(--muted)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:#1e0a0a;border:1px solid #5a2020;color:var(--red)}.btn-danger:hover{background:#2a1010}
+.btn-success{background:#071a11;border:1px solid #1a5c3a;color:var(--green)}.btn-success:hover{background:#0d2518}
+.btn-blue{background:#0d1e35;border:1px solid #1e3a60;color:var(--blue)}.btn-blue:hover{background:#162a4a}
+.btn-sm{padding:6px 12px;font-size:12px}.btn-xs{padding:4px 8px;font-size:11px;border-radius:5px}.btn-full{width:100%}
+
+/* ── STATS ── */
+.stats-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:11px 15px;min-width:90px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.stat:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.stat-v{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:var(--accent);line-height:1}
+.stat-l{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ── TABLE CARD ── */
+.tcard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)}
+.tcard-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.tcard-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.tcard-sub{font-size:12px;color:var(--muted)}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s2);padding:9px 11px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:1}
+tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
+tbody tr:last-child{border:none}
+tbody tr:hover{background:var(--s2)}
+td{padding:8px 11px;vertical-align:top}
+td.nn{white-space:nowrap;vertical-align:middle}
+td.vmid{vertical-align:middle}
+
+/* ── PILLS ── */
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.03em;white-space:nowrap}
+.p-boys{background:#0f1e35;color:var(--blue);border:1px solid #1e3a60}
+.p-girls{background:#2a1030;color:#e879f9;border:1px solid #60205a}
+.p-colive{background:#1e2a10;color:#a3e635;border:1px solid #3a5010}
+.p-active{background:#0a2518;color:var(--green);border:1px solid #1a5c3a}
+.p-inactive{background:#2a1010;color:var(--red);border:1px solid #5a2020}
+.p-coming{background:#2a1e08;color:var(--yellow);border:1px solid #5a4010}
+.p-single{background:#0f1e35;color:var(--blue);border:1px solid #1e3a60}
+.p-double{background:#0a2518;color:var(--green);border:1px solid #1a5c3a}
+.p-triple{background:#2a1e08;color:var(--yellow);border:1px solid #5a4010}
+.p-veg{background:#0a2518;color:var(--green);border:1px solid #1a5c3a}
+
+/* ── RENT BADGE (shown in list view when budget filter active) ── */
+.rent-badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(232,149,10,.12);color:var(--a2);border:1px solid rgba(232,149,10,.3);font-family:'DM Mono',monospace;margin-top:3px}
+
+/* ── MSG CELL ── */
+.msg-cell{vertical-align:top;padding:8px 11px!important}
+.msg-cell-inner{display:flex;flex-direction:column;gap:6px}
+.copy-btn{align-self:flex-start;background:var(--s3);border:1px solid var(--bd);border-radius:5px;padding:3px 9px;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(255,107,43,.08)}
+.copy-btn.copied{border-color:var(--green);color:var(--green);background:rgba(47,214,155,.08)}
+.msg-text{font-size:12px;line-height:1.55;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:110px;overflow:hidden;mask-image:linear-gradient(to bottom,#000 55%,transparent 100%)}
+
+/* ── EDIT INLINE ── */
+tr.erow{background:#0c1220!important}
+tr.erow td{padding:5px 7px!important;vertical-align:middle!important}
+.ei{width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:5px;color:var(--text);padding:5px 7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
+.ei:focus{border-color:var(--accent)}
+.ei-sel{width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:5px;color:var(--text);padding:5px 7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+.ei-sel:focus{border-color:var(--accent)}
+.ei-ta{width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:5px;color:var(--text);padding:5px 7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:60px}
+.ei-ta:focus{border-color:var(--accent)}
+
+/* ── DETAIL VIEW ── */
+#detail-view{display:none;position:absolute;inset:0;top:52px;background:var(--bg);z-index:150;overflow-y:auto;padding:24px 28px}
+#detail-view.open{display:block}
+.dv-topbar{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.dv-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800}
+.dv-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.dv-section{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.dv-section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.info-item{background:var(--s2);border-radius:var(--r);padding:10px 13px}
+.info-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.info-val{font-size:13px;color:var(--text);font-weight:500;word-break:break-word}
+.info-val a{color:var(--blue);text-decoration:none}.info-val a:hover{text-decoration:underline}
+.msg-block{background:var(--s2);border-radius:var(--r);padding:14px;position:relative;margin-bottom:12px}
+.msg-block-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.msg-block-text{font-size:13px;line-height:1.65;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.msg-copy-btn{position:absolute;top:10px;right:10px;background:var(--s3);border:1px solid var(--bd);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.msg-copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.msg-copy-btn.copied{border-color:var(--green);color:var(--green)}
+.rent-tbl-wrap{overflow-x:auto}
+.rent-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rent-tbl thead th{background:var(--s3);padding:8px 11px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--bd);white-space:nowrap}
+.rent-tbl tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
+.rent-tbl tbody tr:last-child{border:none}
+.rent-tbl tbody tr:hover{background:var(--s2)}
+.rent-tbl td{padding:8px 11px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:11px}
+.rent-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--a2)}
+
+/* ── MODALS ── */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.moverlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bd);border-top:3px solid var(--accent);border-radius:var(--r2);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:26px;animation:fadeUp .2s ease}
+.modal-sm{max-width:360px;border-top-color:var(--red)}
+.modal-lg{max-width:780px}
+@keyframes fadeUp{from{transform:translateY(10px);opacity:0}}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:18px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bd)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fgrid .s2{grid-column:1/-1}
+.fg{display:flex;flex-direction:column}
+.fg label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.fg input,.fg select,.fg textarea{width:100%}
+.fg textarea{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);color:var(--text);padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:80px}
+.fg textarea:focus{border-color:var(--accent)}
+.req{color:var(--accent)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:22px;right:22px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:11px 16px;font-size:13px;font-weight:500;display:none;z-index:999;max-width:300px;box-shadow:0 8px 28px rgba(0,0,0,.5);animation:fadeUp .2s ease}
+#toast.ok{border-color:#1a5c3a;color:var(--green)}
+#toast.fail{border-color:#5a2020;color:var(--red)}
+
+/* ── LOADER / EMPTY ── */
+.loader{display:flex;align-items:center;justify-content:center;height:160px;gap:8px;color:var(--muted);font-size:13px}
+.spin{width:17px;height:17px;border:2px solid var(--bd);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty-icon{font-size:34px;margin-bottom:10px}
+.empty h3{font-family:'Syne',sans-serif;font-size:15px;color:var(--text);margin-bottom:4px}
+.empty p{font-size:12px}
+
+/* ── LIGHT THEME OVERRIDES ── */
+[data-theme="light"] thead th,[data-theme="light"] .rent-tbl thead th{background:#EEF0F5;color:#4B5563}
+[data-theme="light"] .topbar{box-shadow:0 1px 4px rgba(0,0,0,.08)}
+[data-theme="light"] input,[data-theme="light"] select{background:#FFFFFF;border-color:#D1D5DB;color:#1A1D23}
+[data-theme="light"] input::placeholder{color:#9CA3AF}
+[data-theme="light"] .btn-ghost{border-color:#D1D5DB;color:#6B7280}
+[data-theme="light"] .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+[data-theme="light"] .modal{background:#FFFFFF}
+[data-theme="light"] tbody tr:hover,[data-theme="light"] .rent-tbl tbody tr:hover{background:#EEF2FF}
+[data-theme="light"] #toast{background:#FFFFFF;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+[data-theme="light"] .copy-btn,[data-theme="light"] .msg-copy-btn{background:#F0F2F5}
+[data-theme="light"] tr.erow{background:#EEF2FF!important}
+[data-theme="light"] .p-boys{background:#EFF6FF;color:#2563EB;border-color:#BFDBFE}
+[data-theme="light"] .p-girls{background:#FDF4FF;color:#9333EA;border-color:#E9D5FF}
+[data-theme="light"] .p-colive{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+[data-theme="light"] .p-active{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+[data-theme="light"] .p-inactive{background:#FEF2F2;color:#DC2626;border-color:#FECACA}
+[data-theme="light"] .p-coming{background:#FFFBEB;color:#D97706;border-color:#FDE68A}
+[data-theme="light"] .p-single{background:#EFF6FF;color:#2563EB;border-color:#BFDBFE}
+[data-theme="light"] .p-double{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+[data-theme="light"] .p-triple{background:#FFFBEB;color:#D97706;border-color:#FDE68A}
+[data-theme="light"] .p-veg{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+[data-theme="light"] .budget-active input{background:rgba(255,107,43,.04)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">Room<b>Adda</b></div>
+  <div class="sep"></div>
+  <span class="page-title">PG Details</span>
+  <div class="nav-pills">
+    <a class="npill" id="np-portal" href="#" target="_blank">👤 Portal</a>
+    <a class="npill" id="np-leads" href="#" target="_blank">🎯 Leads</a>
+    <a class="npill" id="np-cust" href="#" target="_blank">🤝 Customers</a>
+    <a class="npill" id="np-fin" href="#" target="_blank">💰 Finance</a>
+    <a class="npill active" href="#">🏠 PG</a>
+  </div>
+  <div class="topbar-right">
+    <span id="last-sync" style="font-size:11px;color:var(--muted)"></span>
+    <span id="count-badge">—</span>
+    <button class="btn btn-ghost btn-sm" onclick="loadData(false)">⟳ Sync</button>
+    <button class="btn btn-ghost btn-sm" id="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddSg()">+ Add Property</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR FILTERS -->
+  <aside class="sidebar">
+
+    <!-- 1. Property Name Search (replaces old "Search name" + Group dropdown) -->
+    <div>
+      <span class="flabel">Property Name</span>
+      <div class="search-wrap">
+        <input id="f-name" type="text" placeholder="Uma Elite, Amber House…" oninput="onNameInput()"/>
+        <button class="search-clear" id="f-name-clear" title="Clear" onclick="clearNameSearch()">✕</button>
+      </div>
+    </div>
+
+    <!-- 2. Gender -->
+    <div>
+      <span class="flabel">Gender</span>
+      <select id="f-gender" onchange="filter()">
+        <option value="All">All</option>
+        <option>Boys</option>
+        <option>Girls</option>
+        <option>Co-Live</option>
+      </select>
+    </div>
+
+    <!-- 3. Max Budget (NEW) -->
+    <div>
+      <span class="flabel">Max Budget</span>
+      <div class="budget-wrap" id="budget-wrap">
+        <span class="budget-prefix">₹</span>
+        <input id="f-budget" type="number" min="0" step="500" placeholder="e.g. 15000" oninput="onBudgetInput()"/>
+      </div>
+      <div class="budget-hint" id="budget-hint">Shows PGs with any room ≤ budget, sorted highest rent first</div>
+    </div>
+
+    <!-- 4. Status -->
+    <div>
+      <span class="flabel">Status</span>
+      <select id="f-status" onchange="filter()">
+        <option value="All">All</option>
+        <option>Active</option>
+        <option>Inactive</option>
+      </select>
+    </div>
+
+    <!-- 5. Locality -->
+    <div>
+      <span class="flabel">Locality</span>
+      <input id="f-locality" type="text" placeholder="SG Palya, HSR…" oninput="filter()"/>
+    </div>
+
+    <div class="divider"></div>
+    <button class="btn btn-ghost btn-full" onclick="clearF()">✕ Clear filters</button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="list-main">
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-v" id="sv-total">—</div><div class="stat-l">Total PGs</div></div>
+      <div class="stat"><div class="stat-v" id="sv-boys">—</div><div class="stat-l">Boys PGs</div></div>
+      <div class="stat"><div class="stat-v" id="sv-girls">—</div><div class="stat-l">Girls PGs</div></div>
+      <div class="stat"><div class="stat-v" id="sv-colive">—</div><div class="stat-l">Co-Live</div></div>
+      <div class="stat"><div class="stat-v" id="sv-active">—</div><div class="stat-l">Active</div></div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-hdr">
+        <span class="tcard-title">PG Properties</span>
+        <span class="tcard-sub" id="tbl-sub">All properties</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted)">Click ⤢ to expand full details</span>
+      </div>
+      <div id="tbl-area"><div class="loader"><div class="spin"></div> Loading…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL VIEW (full page overlay) -->
+<div id="detail-view">
+  <div class="dv-topbar">
+    <button class="btn btn-ghost btn-sm" onclick="closeDetail()">← Back</button>
+    <div>
+      <div class="dv-title" id="dv-title">—</div>
+      <div class="dv-sub" id="dv-sub">—</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="editSgRow()">✎ Edit Messages</button>
+      <button class="btn btn-danger btn-sm" onclick="askDelSg()">✕ Delete Property</button>
+    </div>
+  </div>
+
+  <div id="dv-loader" class="loader" style="display:none"><div class="spin"></div> Loading details…</div>
+  <div id="dv-content"></div>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════════════ -->
+
+<!-- ADD Sg Palya Row Modal -->
+<div class="moverlay" id="m-add-sg" onclick="if(event.target===this)closeAddSg()">
+  <div class="modal modal-lg">
+    <div class="modal-title">+ Add Property to Sg Palya Details</div>
+    <div class="fgrid">
+      <div class="fg"><label>Property Name <span class="req">*</span></label><input id="asg-prop" placeholder="Uma Elite House"/></div>
+      <div class="fg"><label>House Name <span class="req">*</span></label><input id="asg-house" placeholder="Amber House"/></div>
+      <div class="fg s2"><label>Actual Location (map URL)</label><input id="asg-loc" placeholder="https://maps.app.goo.gl/…"/></div>
+      <div class="fg"><label>Group Name</label><input id="asg-group" placeholder="Uma X RoomAdda"/></div>
+      <div class="fg"><label>Manager Number</label><input id="asg-mgr" placeholder="9876543210"/></div>
+      <div class="fg"><label>Owner Number</label><input id="asg-owner" placeholder="9876543210"/></div>
+      <div class="fg"><label>Locality</label><input id="asg-locality" placeholder="SG Palya"/></div>
+      <div class="fg s2"><label>Food</label><input id="asg-food" placeholder="Pure Veg – 4 Meals…"/></div>
+      <div class="fg s2"><label>Message</label><textarea id="asg-msg" placeholder="🚀 Property Name – Ultra Premium Living…"></textarea></div>
+      <div class="fg s2"><label>Rent Details</label><textarea id="asg-rent" placeholder="🏡 Welcome to…"></textarea></div>
+      <div class="fg s2"><label>Other Details</label><textarea id="asg-other" placeholder="Any extra details…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAddSg()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddSg()">Save Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT Sg Palya Row Modal -->
+<div class="moverlay" id="m-edit-sg" onclick="if(event.target===this)closeEditSg()">
+  <div class="modal modal-lg">
+    <div class="modal-title">✎ Edit Property Messages</div>
+    <input type="hidden" id="esg-orig-prop"/>
+    <input type="hidden" id="esg-orig-house"/>
+    <div class="fgrid">
+      <div class="fg"><label>Property Name</label><input id="esg-prop" placeholder="Uma Elite House"/></div>
+      <div class="fg"><label>House Name</label><input id="esg-house" placeholder="Amber House"/></div>
+      <div class="fg s2"><label>Actual Location (map URL)</label><input id="esg-loc"/></div>
+      <div class="fg"><label>Group Name</label><input id="esg-group"/></div>
+      <div class="fg"><label>Manager Number</label><input id="esg-mgr"/></div>
+      <div class="fg"><label>Owner Number</label><input id="esg-owner"/></div>
+      <div class="fg"><label>Locality</label><input id="esg-locality"/></div>
+      <div class="fg s2"><label>Food</label><input id="esg-food"/></div>
+      <div class="fg s2"><label>Message</label><textarea id="esg-msg" style="min-height:100px"></textarea></div>
+      <div class="fg s2"><label>Rent Details</label><textarea id="esg-rent" style="min-height:100px"></textarea></div>
+      <div class="fg s2"><label>Other Details</label><textarea id="esg-other"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditSg()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEditSg()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD Final Rent Row Modal -->
+<div class="moverlay" id="m-add-rent" onclick="if(event.target===this)closeAddRent()">
+  <div class="modal">
+    <div class="modal-title">+ Add Room Type</div>
+    <input type="hidden" id="ar-prop-name"/>
+    <input type="hidden" id="ar-house-name"/>
+    <div class="fgrid">
+      <div class="fg"><label>Room Type <span class="req">*</span></label><input id="ar-rtype" placeholder="Premium, Standard…"/></div>
+      <div class="fg"><label>Sharing <span class="req">*</span></label>
+        <select id="ar-sharing"><option value="">— select —</option><option>Single</option><option>Double</option><option>Triple</option></select>
+      </div>
+      <div class="fg"><label>Gender</label>
+        <select id="ar-gender"><option value="">— select —</option><option>Boys</option><option>Girls</option><option>Co-Live</option></select>
+      </div>
+      <div class="fg"><label>Monthly Rent ₹ <span class="req">*</span></label><input id="ar-rent" type="number" placeholder="20000"/></div>
+      <div class="fg"><label>Deposit ₹</label><input id="ar-deposit" type="number" placeholder="20000"/></div>
+      <div class="fg"><label>Caution Deposit ₹</label><input id="ar-caution" type="number" placeholder=""/></div>
+      <div class="fg"><label>Notice Period</label><input id="ar-notice" placeholder="30 Days"/></div>
+      <div class="fg"><label>Lock-in Period</label><input id="ar-lockin" placeholder=""/></div>
+      <div class="fg"><label>Maintenance ₹</label><input id="ar-maint" type="number" placeholder="10000"/></div>
+      <div class="fg"><label>Maintenance Post Disc ₹</label><input id="ar-maintd" type="number" placeholder=""/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAddRent()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddRent()">Add Room Type</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT Final Rent Row Modal -->
+<div class="moverlay" id="m-edit-rent" onclick="if(event.target===this)closeEditRent()">
+  <div class="modal">
+    <div class="modal-title">✎ Edit Room Type</div>
+    <input type="hidden" id="er-orig-prop"/>
+    <input type="hidden" id="er-orig-rtype"/>
+    <input type="hidden" id="er-orig-sharing"/>
+    <div class="fgrid">
+      <div class="fg"><label>Room Type</label><input id="er-rtype"/></div>
+      <div class="fg"><label>Sharing</label>
+        <select id="er-sharing"><option>Single</option><option>Double</option><option>Triple</option></select>
+      </div>
+      <div class="fg"><label>Gender</label>
+        <select id="er-gender"><option value="">— select —</option><option>Boys</option><option>Girls</option><option>Co-Live</option></select>
+      </div>
+      <div class="fg"><label>Monthly Rent ₹</label><input id="er-rent" type="number"/></div>
+      <div class="fg"><label>Deposit ₹</label><input id="er-deposit" type="number"/></div>
+      <div class="fg"><label>Caution Deposit ₹</label><input id="er-caution" type="number"/></div>
+      <div class="fg"><label>Notice Period</label><input id="er-notice"/></div>
+      <div class="fg"><label>Lock-in Period</label><input id="er-lockin"/></div>
+      <div class="fg"><label>Maintenance ₹</label><input id="er-maint" type="number"/></div>
+      <div class="fg"><label>Maintenance Post Disc ₹</label><input id="er-maintd" type="number"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditRent()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEditRent()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT Final Property Row Modal -->
+<div class="moverlay" id="m-edit-prop" onclick="if(event.target===this)closeEditProp()">
+  <div class="modal modal-lg">
+    <div class="modal-title">✎ Edit Property Info</div>
+    <input type="hidden" id="ep-orig-id"/>
+    <div class="fgrid">
+      <div class="fg"><label>Property ID</label><input id="ep-id" disabled style="opacity:.5"/></div>
+      <div class="fg"><label>Property Name</label><input id="ep-name"/></div>
+      <div class="fg"><label>House Name</label><input id="ep-house"/></div>
+      <div class="fg"><label>Gender</label>
+        <select id="ep-gender"><option>Boys</option><option>Girls</option><option>Co-Live</option></select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select id="ep-status"><option>Active</option><option>Inactive</option></select>
+      </div>
+      <div class="fg"><label>Furnishing</label><input id="ep-furnishing"/></div>
+      <div class="fg"><label>Food (Yes/No)</label>
+        <select id="ep-food"><option>Yes</option><option>No</option></select>
+      </div>
+      <div class="fg"><label>Veg or Non Veg</label>
+        <select id="ep-veg"><option>Veg</option><option>Non Veg</option><option>Both</option></select>
+      </div>
+      <div class="fg"><label>Manager Contact</label><input id="ep-mgr"/></div>
+      <div class="fg"><label>Owner Contact</label><input id="ep-owner"/></div>
+      <div class="fg s2"><label>Location (map URL)</label><input id="ep-loc"/></div>
+      <div class="fg s2"><label>Nearby Location (map URL)</label><input id="ep-nearby"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditProp()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEditProp()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="moverlay" id="m-del">
+  <div class="modal modal-sm">
+    <div class="modal-title" style="color:var(--red)">Delete?</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:6px">You are about to delete:</p>
+    <p id="del-label" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px"></p>
+    <p style="font-size:12px;color:var(--muted)">This cannot be undone.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDel()">Cancel</button>
+      <button class="btn btn-danger" onclick="doDel()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+var SG_ALL = [], SG_SHOWN = [];
+var FP_ALL = [];   // Final Property cache
+var FR_ALL = [];   // Final Rent cache
+var DETAIL_ROW = null; // current Sg row in detail view
+var DEL = null;
+
+// ── INIT ──────────────────────────────────────────────────────────
+window.onload = function() {
+  loadData(false);
+  setInterval(function(){ loadData(true); }, 30000);
+
+  var _ROLE = '<?= roleParam ?>';
+  var _DEPT = '<?= deptParam ?>';
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r || !r.success) return;
+      g('np-portal').href = r.urls.portal;
+      g('np-leads').href  = r.urls.leads;
+      g('np-cust').href   = r.urls.customers;
+      g('np-fin').href    = r.urls.finance;
+    })
+    .withFailureHandler(function(){})
+    .getNavUrls(_ROLE, _DEPT);
+};
+
+// ── LOAD ALL DATA ────────────────────────────────────────────────
+function loadData(silent) {
+  if (!silent) g('tbl-area').innerHTML = '<div class="loader"><div class="spin"></div> Loading…</div>';
+
+  var sgDone = false, fpDone = false, frDone = false;
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      SG_ALL = res.data || [];
+      sgDone = true;
+      if (sgDone && fpDone && frDone) onAllLoaded(silent);
+    })
+    .withFailureHandler(function(e) { toast('Sg Palya: ' + e.message, false); })
+    .getSgPalaData();
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') return;
+      FP_ALL = res.data || [];
+      fpDone = true;
+      if (sgDone && fpDone && frDone) onAllLoaded(silent);
+    })
+    .withFailureHandler(function(){})
+    .getFinalProperty();
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') return;
+      FR_ALL = res.data || [];
+      frDone = true;
+      if (sgDone && fpDone && frDone) onAllLoaded(silent);
+    })
+    .withFailureHandler(function(){})
+    .getFinalRent();
+}
+
+function onAllLoaded(silent) {
+  SG_SHOWN = SG_ALL.slice();
+  filter();
+  if (!silent) toast('✓ Loaded — ' + SG_ALL.length + ' properties', true);
+  var el = g('last-sync');
+  if (el) el.textContent = 'Last sync: ' + new Date().toLocaleTimeString();
+}
+
+// ── BUDGET FILTER HELPERS ─────────────────────────────────────────
+// Returns the MINIMUM monthly_rent across all room types for a property.
+// Used to check if ANY room fits within the budget.
+function getMinRentForProperty(propName) {
+  var rows = getFRByName(propName);
+  if (!rows.length) return null;
+  var min = null;
+  rows.forEach(function(rr) {
+    var v = parseFloat(str(rr.monthly_rent).replace(/[^\d.]/g, ''));
+    if (!isNaN(v) && v > 0) {
+      if (min === null || v < min) min = v;
+    }
+  });
+  return min;
+}
+
+// Returns the MAXIMUM monthly_rent across all room types for a property.
+// Used for descending sort — we sort by the highest rent that still fits budget.
+function getMaxAffordableRent(propName, budget) {
+  var rows = getFRByName(propName);
+  if (!rows.length) return 0;
+  var max = 0;
+  rows.forEach(function(rr) {
+    var v = parseFloat(str(rr.monthly_rent).replace(/[^\d.]/g, ''));
+    if (!isNaN(v) && v > 0 && v <= budget) {
+      if (v > max) max = v;
+    }
+  });
+  return max;
+}
+
+// ── NAME SEARCH INPUT HANDLER ─────────────────────────────────────
+function onNameInput() {
+  var val = g('f-name').value;
+  var clr = g('f-name-clear');
+  if (clr) clr.classList.toggle('visible', val.length > 0);
+  filter();
+}
+
+function clearNameSearch() {
+  g('f-name').value = '';
+  var clr = g('f-name-clear');
+  if (clr) clr.classList.remove('visible');
+  filter();
+}
+
+// ── BUDGET INPUT HANDLER ──────────────────────────────────────────
+function onBudgetInput() {
+  var val = g('f-budget').value.trim();
+  var wrap = g('budget-wrap');
+  var hint = g('budget-hint');
+  if (val && parseFloat(val) > 0) {
+    wrap.classList.add('budget-active');
+    hint.textContent = 'Showing PGs with rooms ≤ ₹' + Number(val).toLocaleString('en-IN') + ', sorted highest rent first';
+  } else {
+    wrap.classList.remove('budget-active');
+    hint.textContent = 'Shows PGs with any room ≤ budget, sorted highest rent first';
+  }
+  filter();
+}
+
+// ── FILTER ───────────────────────────────────────────────────────
+function filter() {
+  var name     = g('f-name').value.trim().toLowerCase();
+  var gender   = g('f-gender').value;
+  var status   = g('f-status').value;
+  var locality = g('f-locality').value.trim().toLowerCase();
+  var budgetRaw = g('f-budget').value.trim();
+  var budget   = budgetRaw && parseFloat(budgetRaw) > 0 ? parseFloat(budgetRaw) : null;
+
+  SG_SHOWN = SG_ALL.filter(function(r) {
+    // Property name search: matches property name OR house name
+    if (name && !(str(r.property).toLowerCase().includes(name) ||
+                  str(r.house_name).toLowerCase().includes(name))) return false;
+
+    // Locality filter
+    if (locality && !str(r.locality).toLowerCase().includes(locality)) return false;
+
+    // Gender and Status come from Final Property
+    var fp = getFPByName(str(r.property));
+    if (gender !== 'All' && fp && str(fp.gender).toLowerCase() !== gender.toLowerCase()) return false;
+    if (status !== 'All' && fp && str(fp.status).toLowerCase() !== status.toLowerCase()) return false;
+
+    // Budget filter: include only if at least one room type is within budget
+    if (budget !== null) {
+      var minRent = getMinRentForProperty(str(r.property));
+      // If no rent data, still show the property (don't exclude if data is missing)
+      if (minRent !== null && minRent > budget) return false;
+    }
+
+    return true;
+  });
+
+  // Sort: if budget active → descending by max affordable rent
+  //       otherwise → preserve original sheet order
+  if (budget !== null) {
+    SG_SHOWN.sort(function(a, b) {
+      var ra = getMaxAffordableRent(str(a.property), budget);
+      var rb = getMaxAffordableRent(str(b.property), budget);
+      return rb - ra; // descending
+    });
+  }
+
+  renderStats(SG_SHOWN);
+  renderTable(SG_SHOWN, budget);
+  setBadge(SG_SHOWN.length, SG_ALL.length);
+
+  var active = name || gender !== 'All' || status !== 'All' || locality || budget !== null;
+  var sub = 'All properties';
+  if (active) {
+    sub = SG_SHOWN.length + ' match filters';
+    if (budget !== null) sub += ' · ≤ ₹' + Number(budget).toLocaleString('en-IN');
+  }
+  g('tbl-sub').textContent = sub;
+}
+
+function clearF() {
+  g('f-name').value    = '';
+  g('f-locality').value = '';
+  g('f-gender').value  = 'All';
+  g('f-status').value  = 'All';
+  g('f-budget').value  = '';
+  var clr = g('f-name-clear');
+  if (clr) clr.classList.remove('visible');
+  var wrap = g('budget-wrap');
+  if (wrap) wrap.classList.remove('budget-active');
+  var hint = g('budget-hint');
+  if (hint) hint.textContent = 'Shows PGs with any room ≤ budget, sorted highest rent first';
+  filter();
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function getFPByName(propName) {
+  var pn = str(propName).trim().toLowerCase();
+  for (var i = 0; i < FP_ALL.length; i++) {
+    if (str(FP_ALL[i].property_name).trim().toLowerCase() === pn) return FP_ALL[i];
+  }
+  for (var i = 0; i < FP_ALL.length; i++) {
+    var rn = str(FP_ALL[i].property_name).trim().toLowerCase();
+    if (rn.includes(pn) || pn.includes(rn)) return FP_ALL[i];
+  }
+  for (var i = 0; i < FP_ALL.length; i++) {
+    var hn = str(FP_ALL[i].house_name).trim().toLowerCase();
+    if (hn === pn) return FP_ALL[i];
+  }
+  return null;
+}
+
+function getFRByName(propName) {
+  var pn = str(propName).trim().toLowerCase();
+  var exact = FR_ALL.filter(function(r) {
+    return str(r.property_name).trim().toLowerCase() === pn;
+  });
+  if (exact.length) return exact;
+  return FR_ALL.filter(function(r) {
+    var rn = str(r.property_name).trim().toLowerCase();
+    return rn.includes(pn) || pn.includes(rn);
+  });
+}
+
+// ── STATS ─────────────────────────────────────────────────────────
+function renderStats(rows) {
+  var boys = 0, girls = 0, colive = 0, active = 0;
+  rows.forEach(function(r) {
+    var fp = getFPByName(str(r.property));
+    if (!fp) return;
+    var g2 = str(fp.gender).toLowerCase();
+    var s  = str(fp.status).toLowerCase();
+    if (g2 === 'boys') boys++;
+    else if (g2 === 'girls') girls++;
+    else if (g2 === 'co-live') colive++;
+    if (s === 'active') active++;
+  });
+  g('sv-total').textContent  = rows.length || '—';
+  g('sv-boys').textContent   = boys   || '—';
+  g('sv-girls').textContent  = girls  || '—';
+  g('sv-colive').textContent = colive || '—';
+  g('sv-active').textContent = active || '—';
+}
+
+function setBadge(shown, total) {
+  g('count-badge').textContent = shown === total ? (total + ' rows') : (shown + ' / ' + total);
+}
+
+// ── RENDER LIST TABLE ─────────────────────────────────────────────
+// budget param: if set, shows a rent badge on each property card
+function renderTable(rows, budget) {
+  var area = g('tbl-area');
+  if (!rows.length) {
+    area.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><h3>No results</h3><p>Adjust your filters</p></div>';
+    return;
+  }
+
+  var html = '<div class="tscroll"><table><thead><tr>'
+    + '<th style="width:14%">Property</th>'
+    + '<th style="width:11%">House Name</th>'
+    + '<th style="width:33%">Message</th>'
+    + '<th style="width:33%">Rent Details</th>'
+    + '<th style="width:9%">Actions</th>'
+    + '</tr></thead><tbody>';
+
+  rows.forEach(function(r, i) {
+    var fp       = getFPByName(str(r.property)) || {};
+    var propEsc  = esc(str(r.property));
+    var houseEsc = esc(str(r.house_name));
+
+    var msgText  = str(r.message);
+    var rentText = str(r.rent_details);
+    var genderPillHtml = fp.gender ? genderPill(str(fp.gender)) : '';
+    var statusPillHtml = fp.status ? statusPill(str(fp.status)) : '';
+
+    // Budget badge: show the max affordable rent for this property when budget filter is on
+    var budgetBadgeHtml = '';
+    if (budget !== null) {
+      var maxAffordable = getMaxAffordableRent(str(r.property), budget);
+      if (maxAffordable > 0) {
+        budgetBadgeHtml = '<div><span class="rent-badge">from ₹' + Number(maxAffordable).toLocaleString('en-IN') + '</span></div>';
+      }
+    }
+
+    html += '<tr>'
+      // Property col
+      + '<td class="vmid">'
+      +   '<div style="font-weight:600;font-size:13px;margin-bottom:3px">' + propEsc + '</div>'
+      +   '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">' + houseEsc + '</div>'
+      +   '<div style="display:flex;gap:4px;flex-wrap:wrap">' + genderPillHtml + statusPillHtml + '</div>'
+      +   budgetBadgeHtml
+      + '</td>'
+      // House Name col
+      + '<td class="vmid" style="font-size:12px;color:var(--muted)">' + houseEsc + '</td>'
+      // Message col
+      + '<td class="msg-cell">'
+      +   '<div class="msg-cell-inner">'
+      +     '<button class="copy-btn" id="cbm-' + i + '" onclick="copyText(\'cbm-' + i + '\',\'msg-' + i + '\')">📋 Copy</button>'
+      +     '<div class="msg-text" id="msg-' + i + '">' + esc(msgText) + '</div>'
+      +   '</div>'
+      + '</td>'
+      // Rent Details col
+      + '<td class="msg-cell">'
+      +   '<div class="msg-cell-inner">'
+      +     '<button class="copy-btn" id="cbr-' + i + '" onclick="copyText(\'cbr-' + i + '\',\'rent-' + i + '\')">📋 Copy</button>'
+      +     '<div class="msg-text" id="rent-' + i + '">' + esc(rentText) + '</div>'
+      +   '</div>'
+      + '</td>'
+      // Actions col
+      + '<td class="nn">'
+      +   '<button class="btn btn-blue btn-xs" style="margin-bottom:3px;width:100%" onclick="openDetail(' + i + ')">⤢ Expand</button>'
+      +   '<button class="btn btn-ghost btn-xs" style="margin-bottom:3px;width:100%" onclick="openEditSg(' + i + ')">✎ Edit</button>'
+      +   '<button class="btn btn-danger btn-xs" style="width:100%" onclick="askDelSgRow(' + i + ')">✕ Del</button>'
+      + '</td>'
+      + '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  area.innerHTML = html;
+}
+
+// ── COPY BUTTON ───────────────────────────────────────────────────
+function copyText(btnId, srcId) {
+  var el  = g(srcId);
+  var btn = g(btnId);
+  if (!el || !btn) return;
+  var text = el.textContent || el.innerText || '';
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = '📋 Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = '📋 Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyRaw(btnId, text) {
+  var btn = g(btnId);
+  if (!btn) return;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── DETAIL VIEW ───────────────────────────────────────────────────
+function openDetail(idx) {
+  DETAIL_ROW = SG_SHOWN[idx];
+  if (!DETAIL_ROW) return;
+
+  var dv = g('detail-view');
+  dv.classList.add('open');
+  dv.scrollTop = 0;
+
+  g('dv-title').textContent = str(DETAIL_ROW.property);
+  g('dv-sub').textContent   = str(DETAIL_ROW.house_name) + (DETAIL_ROW.group_name ? ' · ' + str(DETAIL_ROW.group_name) : '');
+
+  var fp        = getFPByName(str(DETAIL_ROW.property)) || {};
+  var rentRows  = getFRByName(str(DETAIL_ROW.property));
+
+  var html = '';
+
+  // ── Section 1: Property Info (Final Property) ──
+  html += '<div class="dv-section">'
+    + '<div class="dv-section-title">🏢 Property Info</div>'
+    + '<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'
+    +   '<button class="btn btn-ghost btn-xs" onclick="openEditProp()">✎ Edit Info</button>'
+    + '</div>'
+    + '<div class="info-grid">'
+    + infoItem('Property ID',     str(fp.property_id || '—'))
+    + infoItem('Property Name',   str(fp.property_name || str(DETAIL_ROW.property)))
+    + infoItem('House Name',      str(fp.house_name || str(DETAIL_ROW.house_name)))
+    + infoItem('Gender',          fp.gender ? genderPill(fp.gender) : '—', true)
+    + infoItem('Status',          fp.status ? statusPill(fp.status) : '—', true)
+    + infoItem('Furnishing',      str(fp.furnishing || '—'))
+    + infoItem('Food',            str(fp.food || '—'))
+    + infoItem('Veg / Non-Veg',   str(fp.veg_nonveg || '—'))
+    + infoItem('Manager Contact', str(fp.manager_contact || str(DETAIL_ROW.manager_number || '—')))
+    + infoItem('Owner Contact',   str(fp.owner_contact  || str(DETAIL_ROW.owner_number   || '—')));
+
+  if (fp.location) {
+    html += infoItem('Location', '<a href="' + esc(fp.location) + '" target="_blank">📍 View on Map</a>', true);
+  }
+  if (fp.nearby_location) {
+    html += infoItem('Nearby Location', '<a href="' + esc(fp.nearby_location) + '" target="_blank">📍 View Nearby</a>', true);
+  }
+  html += '</div></div>';
+
+  // ── Section 2: Messages (Sg Palya Details) ──
+  html += '<div class="dv-section">'
+    + '<div class="dv-section-title">💬 Messages & Details</div>';
+
+  var msgText   = str(DETAIL_ROW.message);
+  var rentText  = str(DETAIL_ROW.rent_details);
+  var foodText  = str(DETAIL_ROW.food);
+  var otherText = str(DETAIL_ROW.other_details);
+  var cannedText = str(DETAIL_ROW.canned_messages);
+
+  if (msgText) {
+    html += '<div class="msg-block">'
+      + '<div class="msg-block-lbl">📣 Message</div>'
+      + '<button class="msg-copy-btn" id="dv-cbm" onclick="copyRaw(\'dv-cbm\',dvMsgText)">📋 Copy</button>'
+      + '<div class="msg-block-text">' + esc(msgText) + '</div>'
+      + '</div>';
+  }
+  if (rentText) {
+    html += '<div class="msg-block">'
+      + '<div class="msg-block-lbl">💰 Rent Details Message</div>'
+      + '<button class="msg-copy-btn" id="dv-cbr" onclick="copyRaw(\'dv-cbr\',dvRentText)">📋 Copy</button>'
+      + '<div class="msg-block-text">' + esc(rentText) + '</div>'
+      + '</div>';
+  }
+  if (foodText) {
+    html += '<div class="msg-block">'
+      + '<div class="msg-block-lbl">🥗 Food</div>'
+      + '<div class="msg-block-text">' + esc(foodText) + '</div>'
+      + '</div>';
+  }
+  if (otherText) {
+    html += '<div class="msg-block">'
+      + '<div class="msg-block-lbl">📝 Other Details</div>'
+      + '<div class="msg-block-text">' + esc(otherText) + '</div>'
+      + '</div>';
+  }
+  if (cannedText) {
+    html += '<div class="msg-block">'
+      + '<div class="msg-block-lbl">📌 Canned Messages</div>'
+      + '<button class="msg-copy-btn" id="dv-cbc" onclick="copyRaw(\'dv-cbc\',dvCannedText)">📋 Copy</button>'
+      + '<div class="msg-block-text">' + esc(cannedText) + '</div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  // ── Section 3: Room Types (Final Rent) ──
+  html += '<div class="dv-section">'
+    + '<div class="dv-section-title" style="justify-content:space-between">'
+    +   '<span>🛏️ Room Types & Pricing</span>'
+    +   '<button class="btn btn-primary btn-xs" onclick="openAddRent()">+ Add Room Type</button>'
+    + '</div>';
+
+  if (!rentRows.length) {
+    html += '<div style="font-size:13px;color:var(--muted);padding:12px 0">No room types found in Final Rent sheet for this property.</div>';
+  } else {
+    html += '<div class="rent-tbl-wrap"><table class="rent-tbl"><thead><tr>'
+      + '<th>Room Type</th><th>Sharing</th><th>Gender</th><th>Rent ₹</th>'
+      + '<th>Deposit ₹</th><th>Caution Dep.</th><th>Notice</th>'
+      + '<th>Lock-in</th><th>Maint. ₹</th><th>Maint. Disc ₹</th><th>Actions</th>'
+      + '</tr></thead><tbody>';
+
+    rentRows.forEach(function(rr, ri) {
+      html += '<tr>'
+        + '<td style="font-weight:600">' + esc(str(rr.room_type)) + '</td>'
+        + '<td>' + sharingPill(str(rr.sharing)) + '</td>'
+        + '<td>' + (rr.gender ? genderPill(str(rr.gender)) : '—') + '</td>'
+        + '<td class="rent-val">' + (rr.monthly_rent ? '₹' + fmt(rr.monthly_rent) : '—') + '</td>'
+        + '<td class="mono">'    + (rr.deposit ? '₹' + fmt(rr.deposit) : '—') + '</td>'
+        + '<td class="mono">'    + (rr.caution_deposit ? '₹' + fmt(rr.caution_deposit) : '—') + '</td>'
+        + '<td style="font-size:12px">' + esc(str(rr.notice_period || '—')) + '</td>'
+        + '<td style="font-size:12px">' + esc(str(rr.lock_in_period || '—')) + '</td>'
+        + '<td class="mono">'    + (rr.maintenance_amount ? '₹' + fmt(rr.maintenance_amount) : '—') + '</td>'
+        + '<td class="mono">'    + (rr.maintenance_disc ? '₹' + fmt(rr.maintenance_disc) : '—') + '</td>'
+        + '<td class="nn">'
+        +   '<button class="btn btn-ghost btn-xs" style="margin-right:3px" onclick="openEditRent(' + ri + ')">✎</button>'
+        +   '<button class="btn btn-danger btn-xs" onclick="askDelRent(' + ri + ')">✕</button>'
+        + '</td>'
+        + '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+  }
+  html += '</div>';
+
+  g('dv-content').innerHTML = html;
+
+  window.dvMsgText    = msgText;
+  window.dvRentText   = rentText;
+  window.dvCannedText = cannedText;
+}
+
+function closeDetail() {
+  g('detail-view').classList.remove('open');
+  DETAIL_ROW = null;
+}
+
+function infoItem(lbl, val, raw) {
+  return '<div class="info-item"><div class="info-lbl">' + lbl + '</div>'
+    + '<div class="info-val">' + (raw ? val : esc(val)) + '</div></div>';
+}
+
+// ── SG PALYA ADD ──────────────────────────────────────────────────
+function openAddSg() { g('m-add-sg').classList.add('open'); }
+function closeAddSg() { g('m-add-sg').classList.remove('open'); }
+function submitAddSg() {
+  var v = function(id) { return g(id) ? g(id).value : ''; };
+  var payload = {
+    property:        v('asg-prop').trim(),
+    house_name:      v('asg-house').trim(),
+    actual_location: v('asg-loc').trim(),
+    group_name:      v('asg-group').trim(),
+    manager_number:  v('asg-mgr').trim(),
+    owner_number:    v('asg-owner').trim(),
+    locality:        v('asg-locality').trim(),
+    food:            v('asg-food').trim(),
+    message:         v('asg-msg').trim(),
+    rent_details:    v('asg-rent').trim(),
+    other_details:   v('asg-other').trim()
+  };
+  if (!payload.property || !payload.house_name) { toast('Property and House Name are required', false); return; }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      closeAddSg();
+      toast('✓ Property added — reloading…', true);
+      setTimeout(function() { loadData(true); }, 800);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .addSgPalaRow(payload);
+}
+
+// ── SG PALYA EDIT ─────────────────────────────────────────────────
+function openEditSg(idx) {
+  var r = SG_SHOWN[idx];
+  if (!r) return;
+  g('esg-orig-prop').value  = str(r.property);
+  g('esg-orig-house').value = str(r.house_name);
+  g('esg-prop').value       = str(r.property);
+  g('esg-house').value      = str(r.house_name);
+  g('esg-loc').value        = str(r.actual_location);
+  g('esg-group').value      = str(r.group_name);
+  g('esg-mgr').value        = str(r.manager_number);
+  g('esg-owner').value      = str(r.owner_number);
+  g('esg-locality').value   = str(r.locality);
+  g('esg-food').value       = str(r.food);
+  g('esg-msg').value        = str(r.message);
+  g('esg-rent').value       = str(r.rent_details);
+  g('esg-other').value      = str(r.other_details);
+  g('m-edit-sg').classList.add('open');
+}
+function editSgRow() {
+  if (!DETAIL_ROW) return;
+  var idx = SG_SHOWN.indexOf(DETAIL_ROW);
+  if (idx === -1) {
+    for (var i = 0; i < SG_SHOWN.length; i++) {
+      if (SG_SHOWN[i].property === DETAIL_ROW.property && SG_SHOWN[i].house_name === DETAIL_ROW.house_name) {
+        idx = i; break;
+      }
+    }
+  }
+  if (idx !== -1) openEditSg(idx);
+}
+function closeEditSg() { g('m-edit-sg').classList.remove('open'); }
+function submitEditSg() {
+  var v = function(id) { return g(id) ? g(id).value : ''; };
+  var payload = {
+    property:        v('esg-orig-prop'),
+    house_name:      v('esg-orig-house'),
+    actual_location: v('esg-loc').trim(),
+    group_name:      v('esg-group').trim(),
+    manager_number:  v('esg-mgr').trim(),
+    owner_number:    v('esg-owner').trim(),
+    locality:        v('esg-locality').trim(),
+    food:            v('esg-food').trim(),
+    message:         v('esg-msg').trim(),
+    rent_details:    v('esg-rent').trim(),
+    other_details:   v('esg-other').trim()
+  };
+  toast('Saving…', true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      closeEditSg();
+      toast('✓ Saved — reloading…', true);
+      setTimeout(function() { loadData(true); }, 600);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .updateSgPalaRow(payload);
+}
+
+// ── SG PALYA DELETE ───────────────────────────────────────────────
+function askDelSgRow(idx) {
+  var r = SG_SHOWN[idx];
+  if (!r) return;
+  DEL = { type: 'sg', property: str(r.property), house_name: str(r.house_name) };
+  g('del-label').textContent = str(r.property) + ' — ' + str(r.house_name);
+  g('m-del').classList.add('open');
+}
+function askDelSg() {
+  if (!DETAIL_ROW) return;
+  DEL = { type: 'sg', property: str(DETAIL_ROW.property), house_name: str(DETAIL_ROW.house_name) };
+  g('del-label').textContent = str(DETAIL_ROW.property) + ' — ' + str(DETAIL_ROW.house_name);
+  g('m-del').classList.add('open');
+}
+function closeDel() { g('m-del').classList.remove('open'); DEL = null; }
+function doDel() {
+  if (!DEL) return;
+  var d = DEL; closeDel(); toast('Deleting…', true);
+  if (d.type === 'sg') {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.status !== 'success') { toast(res.message, false); return; }
+        closeDetail();
+        toast('✓ Deleted', true);
+        setTimeout(function() { loadData(true); }, 600);
+      })
+      .withFailureHandler(function(e) { toast(e.message, false); })
+      .deleteSgPalaRow({ property: d.property, house_name: d.house_name });
+  } else if (d.type === 'rent') {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.status !== 'success') { toast(res.message, false); return; }
+        toast('✓ Room type deleted', true);
+        setTimeout(function() { loadData(true); setTimeout(function(){ reopenDetail(); }, 400); }, 600);
+      })
+      .withFailureHandler(function(e) { toast(e.message, false); })
+      .deleteFinalRentRow({ property_name: d.property_name, room_type: d.room_type, sharing: d.sharing });
+  }
+}
+
+// ── FINAL PROPERTY EDIT ───────────────────────────────────────────
+function openEditProp() {
+  if (!DETAIL_ROW) return;
+  var fp = getFPByName(str(DETAIL_ROW.property)) || {};
+  g('ep-orig-id').value    = str(fp.property_id || '');
+  g('ep-id').value         = str(fp.property_id || '—');
+  g('ep-name').value       = str(fp.property_name || str(DETAIL_ROW.property));
+  g('ep-house').value      = str(fp.house_name || str(DETAIL_ROW.house_name));
+  setSelect('ep-gender',     str(fp.gender || 'Boys'));
+  setSelect('ep-status',     str(fp.status || 'Active'));
+  g('ep-furnishing').value = str(fp.furnishing || '');
+  setSelect('ep-food',       str(fp.food || 'Yes'));
+  setSelect('ep-veg',        str(fp.veg_nonveg || 'Veg'));
+  g('ep-mgr').value        = str(fp.manager_contact || str(DETAIL_ROW.manager_number || ''));
+  g('ep-owner').value      = str(fp.owner_contact || str(DETAIL_ROW.owner_number || ''));
+  g('ep-loc').value        = str(fp.location || str(DETAIL_ROW.actual_location || ''));
+  g('ep-nearby').value     = str(fp.nearby_location || '');
+  g('m-edit-prop').classList.add('open');
+}
+function closeEditProp() { g('m-edit-prop').classList.remove('open'); }
+function submitEditProp() {
+  var v = function(id) { return g(id) ? g(id).value : ''; };
+  var payload = {
+    property_id:     v('ep-orig-id'),
+    property_name:   v('ep-name').trim(),
+    house_name:      v('ep-house').trim(),
+    gender:          v('ep-gender'),
+    status:          v('ep-status'),
+    furnishing:      v('ep-furnishing').trim(),
+    food:            v('ep-food'),
+    veg_nonveg:      v('ep-veg'),
+    manager_contact: v('ep-mgr').trim(),
+    owner_contact:   v('ep-owner').trim(),
+    location:        v('ep-loc').trim(),
+    nearby_location: v('ep-nearby').trim()
+  };
+  toast('Saving…', true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      closeEditProp();
+      toast('✓ Property info saved — reloading…', true);
+      setTimeout(function() { loadData(true); setTimeout(function(){ reopenDetail(); }, 400); }, 600);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .updateFinalPropertyRow(payload);
+}
+
+// ── FINAL RENT ADD ────────────────────────────────────────────────
+function openAddRent() {
+  if (!DETAIL_ROW) return;
+  g('ar-prop-name').value  = str(DETAIL_ROW.property);
+  g('ar-house-name').value = str(DETAIL_ROW.house_name);
+  ['ar-rtype','ar-rent','ar-deposit','ar-caution','ar-notice','ar-lockin','ar-maint','ar-maintd'].forEach(function(id){ g(id).value=''; });
+  g('ar-sharing').value = '';
+  g('ar-gender').value  = '';
+  g('m-add-rent').classList.add('open');
+}
+function closeAddRent() { g('m-add-rent').classList.remove('open'); }
+function submitAddRent() {
+  var v = function(id) { return g(id) ? g(id).value : ''; };
+  var payload = {
+    property_name:      v('ar-prop-name'),
+    house_name:         v('ar-house-name'),
+    room_type:          v('ar-rtype').trim(),
+    sharing:            v('ar-sharing'),
+    gender:             v('ar-gender'),
+    monthly_rent:       v('ar-rent'),
+    deposit:            v('ar-deposit'),
+    caution_deposit:    v('ar-caution'),
+    notice_period:      v('ar-notice').trim(),
+    lock_in_period:     v('ar-lockin').trim(),
+    maintenance_amount: v('ar-maint'),
+    maintenance_disc:   v('ar-maintd')
+  };
+  if (!payload.room_type || !payload.monthly_rent) { toast('Room Type and Rent are required', false); return; }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      closeAddRent();
+      toast('✓ Room type added — reloading…', true);
+      setTimeout(function() { loadData(true); setTimeout(function(){ reopenDetail(); }, 400); }, 600);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .addFinalRentRow(payload);
+}
+
+// ── FINAL RENT EDIT ───────────────────────────────────────────────
+function openEditRent(rentIdx) {
+  if (!DETAIL_ROW) return;
+  var rentRows = getFRByName(str(DETAIL_ROW.property));
+  var rr = rentRows[rentIdx];
+  if (!rr) return;
+  g('er-orig-prop').value    = str(DETAIL_ROW.property);
+  g('er-orig-rtype').value   = str(rr.room_type);
+  g('er-orig-sharing').value = str(rr.sharing);
+  g('er-rtype').value    = str(rr.room_type);
+  setSelect('er-sharing',  str(rr.sharing));
+  setSelect('er-gender',   str(rr.gender || ''));
+  g('er-rent').value     = str(rr.monthly_rent || '');
+  g('er-deposit').value  = str(rr.deposit || '');
+  g('er-caution').value  = str(rr.caution_deposit || '');
+  g('er-notice').value   = str(rr.notice_period || '');
+  g('er-lockin').value   = str(rr.lock_in_period || '');
+  g('er-maint').value    = str(rr.maintenance_amount || '');
+  g('er-maintd').value   = str(rr.maintenance_disc || '');
+  g('m-edit-rent').classList.add('open');
+}
+function closeEditRent() { g('m-edit-rent').classList.remove('open'); }
+function submitEditRent() {
+  var v = function(id) { return g(id) ? g(id).value : ''; };
+  var payload = {
+    property_name:      v('er-orig-prop'),
+    room_type:          v('er-orig-rtype'),
+    sharing:            v('er-orig-sharing'),
+    gender:             v('er-gender'),
+    monthly_rent:       v('er-rent'),
+    deposit:            v('er-deposit'),
+    caution_deposit:    v('er-caution'),
+    notice_period:      v('er-notice').trim(),
+    lock_in_period:     v('er-lockin').trim(),
+    maintenance_amount: v('er-maint'),
+    maintenance_disc:   v('er-maintd')
+  };
+  toast('Saving…', true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      closeEditRent();
+      toast('✓ Saved — reloading…', true);
+      setTimeout(function() { loadData(true); setTimeout(function(){ reopenDetail(); }, 400); }, 600);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .updateFinalRentRow(payload);
+}
+
+// ── FINAL RENT DELETE ─────────────────────────────────────────────
+function askDelRent(rentIdx) {
+  if (!DETAIL_ROW) return;
+  var rentRows = getFRByName(str(DETAIL_ROW.property));
+  var rr = rentRows[rentIdx];
+  if (!rr) return;
+  DEL = { type: 'rent', property_name: str(DETAIL_ROW.property), room_type: str(rr.room_type), sharing: str(rr.sharing) };
+  g('del-label').textContent = str(rr.room_type) + ' · ' + str(rr.sharing) + ' (' + str(DETAIL_ROW.property) + ')';
+  g('m-del').classList.add('open');
+}
+
+// ── REOPEN DETAIL after reload ────────────────────────────────────
+function reopenDetail() {
+  if (!DETAIL_ROW) return;
+  var prop  = str(DETAIL_ROW.property);
+  var house = str(DETAIL_ROW.house_name);
+  for (var i = 0; i < SG_SHOWN.length; i++) {
+    if (str(SG_SHOWN[i].property) === prop && str(SG_SHOWN[i].house_name) === house) {
+      openDetail(i); return;
+    }
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function setSelect(id, val) {
+  var el = g(id);
+  if (!el) return;
+  for (var i = 0; i < el.options.length; i++) {
+    if (el.options[i].value.toLowerCase() === val.toLowerCase() ||
+        el.options[i].text.toLowerCase()  === val.toLowerCase()) {
+      el.selectedIndex = i; return;
+    }
+  }
+}
+function str(v)  { return (v || '').toString(); }
+function esc(v)  { return str(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmt(n)  { return Number(n).toLocaleString('en-IN'); }
+function g(id)   { return document.getElementById(id); }
+
+function genderPill(v) {
+  var map = { boys:'p-boys', girls:'p-girls', 'co-live':'p-colive', colive:'p-colive' };
+  return v ? '<span class="pill ' + (map[str(v).toLowerCase().replace(/[^a-z]/g,'')] || map[str(v).toLowerCase()] || '') + '">' + esc(v) + '</span>' : '—';
+}
+function statusPill(v) {
+  var map = { active:'p-active', inactive:'p-inactive', 'comingsoon':'p-coming' };
+  return v ? '<span class="pill ' + (map[str(v).toLowerCase().replace(/\s/g,'')] || '') + '">' + esc(v) + '</span>' : '—';
+}
+function sharingPill(v) {
+  var map = { single:'p-single', double:'p-double', triple:'p-triple' };
+  return v ? '<span class="pill ' + (map[str(v).toLowerCase()] || '') + '">' + esc(v) + '</span>' : '—';
+}
+function toast(msg, ok) {
+  var t = g('toast');
+  t.textContent = msg;
+  t.className = ok ? 'ok' : 'fail';
+  t.style.display = 'block';
+  clearTimeout(t._t);
+  t._t = setTimeout(function() { t.style.display = 'none'; }, 3000);
+}
+function toggleTheme() {
+  var html = document.documentElement, btn = g('theme-btn');
+  var cur  = html.getAttribute('data-theme') || 'dark';
+  if (cur === 'dark') {
+    html.setAttribute('data-theme','light');
+    btn.textContent = '🌙 Dark';
+    localStorage.setItem('ra-theme','light');
+  } else {
+    html.setAttribute('data-theme','dark');
+    btn.textContent = '☀️ Light';
+    localStorage.setItem('ra-theme','dark');
+  }
+}
+(function(){
+  var saved = localStorage.getItem('ra-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  window.addEventListener('DOMContentLoaded', function() {
+    var btn = g('theme-btn');
+    if (btn) btn.textContent = saved === 'light' ? '🌙 Dark' : '☀️ Light';
+  });
+})();
+</script>
+</body>
+</html>

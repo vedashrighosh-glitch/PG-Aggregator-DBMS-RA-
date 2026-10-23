@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RoomAdda — Customers</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06070F;--s1:#0F1120;--s2:#151829;--s3:#1C2035;
+  --bd:rgba(255,255,255,0.05);--bd2:rgba(255,255,255,0.09);--bd3:rgba(255,255,255,0.15);
+  --orange:#FF5B1F;--og2:#FF7A40;--og-glow:rgba(255,91,31,0.25);--og-dim:rgba(255,91,31,0.10);
+  --green:#00E5A0;--gn-dim:rgba(0,229,160,0.10);--gn-glow:rgba(0,229,160,0.25);
+  --red:#FF4466;--rd-dim:rgba(255,68,102,0.10);--rd-mid:rgba(255,68,102,0.20);
+  --blue:#4A9EFF;--bl-dim:rgba(74,158,255,0.10);
+  --purple:#9B7FFF;--pr-dim:rgba(155,127,255,0.10);
+  --yellow:#FFD166;--yl-dim:rgba(255,209,102,0.10);
+  --text:#F0F2FF;--text2:#8890B0;--text3:#454870;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+  --topbar-h:56px;--sidebar-w:228px;--r:10px;--rs:6px;
+  --tr:all 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+button,input,select,textarea{font-family:var(--font);outline:none}
+.hidden{display:none!important}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 50% at 80% 10%,rgba(0,229,160,0.05),transparent 60%),
+             radial-gradient(ellipse 50% 60% at 20% 80%,rgba(74,158,255,0.05),transparent 55%)}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--topbar-h);
+  background:rgba(6,7,15,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd2);
+  display:flex;align-items:center;padding:0 20px;gap:0}
+.tb-logo{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-0.5px;flex-shrink:0;margin-right:20px}
+.tb-logo em{color:var(--orange);font-style:normal}
+.tb-sep{width:1px;height:16px;background:var(--bd2);flex-shrink:0}
+.tb-page{font-size:11px;font-family:var(--mono);color:var(--text3);margin-left:14px;text-transform:uppercase;letter-spacing:.1em}
+.nav-pills{display:flex;gap:2px;margin-left:12px}
+.npill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;color:var(--text2);border:1px solid transparent;transition:var(--tr);white-space:nowrap;text-decoration:none;cursor:pointer}
+.npill:hover{color:var(--text);background:var(--s2);border-color:var(--bd2)}
+.npill.active{color:var(--green);background:var(--gn-dim);border-color:rgba(0,229,160,.3)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+#last-sync{font-size:10px;color:var(--text3);font-family:var(--mono)}
+#count-badge{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tb-btn{padding:7px 14px;border-radius:var(--rs);background:var(--s2);border:1px solid var(--bd2);color:var(--text2);font-size:12px;font-weight:600;transition:var(--tr);cursor:pointer}
+.tb-btn:hover{color:var(--text);border-color:var(--bd3)}
+.tb-btn.prim{background:var(--green);color:var(--bg);border-color:var(--green)}
+.tb-btn.prim:hover{background:#00FFB0;box-shadow:0 4px 20px var(--gn-glow)}
+
+.page-shell{display:flex;height:calc(100vh - var(--topbar-h));margin-top:var(--topbar-h);overflow:hidden;position:relative;z-index:1}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:12px}
+.sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);display:block;margin-bottom:5px}
+.sb-inp{width:100%;padding:8px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--text);font-size:12.5px;transition:border-color .15s}
+.sb-inp:focus{border-color:var(--green)}.sb-inp::placeholder{color:var(--text3)}
+select.sb-inp{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0l4 4 4-4z' fill='%23454870'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:24px}
+select.sb-inp option{background:var(--s2)}
+.sb-div{height:1px;background:var(--bd)}
+.sb-clear{width:100%;padding:8px;border-radius:var(--rs);background:transparent;border:1px solid var(--bd);color:var(--text3);font-size:12px;font-weight:600;transition:var(--tr);cursor:pointer}
+.sb-clear:hover{color:var(--red);border-color:rgba(255,68,102,.35)}
+.main{flex:1;overflow:auto;padding:18px 20px 48px}
+
+.kpi-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 18px;flex:1;min-width:100px;position:relative;overflow:hidden;transition:var(--tr)}
+.kpi:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kc,var(--green));opacity:0;transition:opacity .2s}
+.kpi:hover::after{opacity:1}
+.kpi-v{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--kc,var(--text));line-height:1}
+.kpi-l{font-size:10px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.08em}
+.kpi.kg{--kc:var(--green)}.kpi.ko{--kc:var(--orange)}.kpi.kb{--kc:var(--blue)}.kpi.kp{--kc:var(--purple)}.kpi.kr{--kc:var(--red)}.kpi.ky{--kc:var(--yellow)}
+
+.tcard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.tcard-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.tcard-title{font-size:14px;font-weight:700;color:var(--text)}
+.tcard-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:1600px}
+thead th{background:var(--s2);padding:9px 10px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--bd2);white-space:nowrap;position:sticky;top:0;z-index:1;font-family:var(--mono)}
+tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--s2)}
+.ra{display:flex;gap:3px;opacity:1;transition:opacity .15s;justify-content:flex-end}
+td{padding:9px 10px;vertical-align:middle}
+.ra-b{width:26px;height:26px;border-radius:var(--rs);background:transparent;border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);cursor:pointer;transition:var(--tr)}
+.ra-e:hover{color:var(--text);background:var(--s3);border-color:var(--bd2)}
+.ra-d:hover{color:var(--red);background:var(--rd-dim);border-color:rgba(255,68,102,.3)}
+tr.erow{background:rgba(0,229,160,.03)!important}
+tr.erow td{padding:5px 8px!important}
+.ei{width:100%;background:var(--s3);border:1px solid var(--bd2);border-radius:4px;color:var(--text);padding:4px 6px;font-size:11px;transition:border-color .12s}
+.ei:focus{border-color:var(--green);outline:none}
+.ei-s{width:100%;background:var(--s3);border:1px solid var(--bd2);border-radius:4px;color:var(--text);padding:4px 6px;font-size:11px;cursor:pointer;appearance:none}
+.erow .ra{opacity:1}
+.ei-save{width:100%;padding:4px;border-radius:4px;background:var(--gn-dim);border:1px solid rgba(0,229,160,.3);color:var(--green);font-size:10px;font-weight:700;cursor:pointer;margin-bottom:2px}
+.ei-cnc{width:100%;padding:3px;border-radius:4px;background:transparent;border:1px solid var(--bd);color:var(--text3);font-size:10px;cursor:pointer}
+.cust-n{font-weight:700;font-size:13px;color:var(--text);line-height:1.2}
+.cust-sub{font-size:9.5px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.note-cell{font-size:11px;color:var(--text2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+.num-cell{font-family:var(--mono);font-size:11px;color:var(--text2);text-align:right}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.pa{background:var(--gn-dim);color:var(--green);border:1px solid rgba(0,229,160,.25)}
+.pv{background:var(--rd-dim);color:var(--red);border:1px solid rgba(255,68,102,.25)}
+.pnp{background:var(--yl-dim);color:var(--yellow);border:1px solid rgba(255,209,102,.25)}
+.pm{background:var(--bl-dim);color:var(--blue);border:1px solid rgba(74,158,255,.25)}
+.ps{background:var(--bl-dim);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
+.pd{background:var(--gn-dim);color:var(--green);border:1px solid rgba(0,229,160,.2)}
+.pt{background:var(--pr-dim);color:var(--purple);border:1px solid rgba(155,127,255,.25)}
+.loader{display:flex;align-items:center;justify-content:center;height:180px;gap:8px;color:var(--text3);font-size:13px}
+.spin{width:16px;height:16px;border:2px solid var(--bd2);border-top-color:var(--green);border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-s{text-align:center;padding:56px;color:var(--text3)}
+.empty-s h3{font-size:15px;font-weight:700;color:var(--text);margin:12px 0 6px}
+
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);z-index:400;align-items:center;justify-content:center;padding:20px}
+.mover.open{display:flex}
+.mbox{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r);padding:26px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;position:relative;animation:popIn .2s cubic-bezier(.16,1,.3,1)}
+.mbox.sm{max-width:380px}
+.mbox.add-m{border-top:3px solid var(--green)}
+.mbox.del-m{border-top:3px solid var(--red)}
+@keyframes popIn{from{transform:scale(.92) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.mtitle{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.mcls{width:28px;height:28px;border-radius:var(--rs);background:var(--s2);border:1px solid var(--bd);color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);flex-shrink:0;margin-left:10px}
+.mcls:hover{color:var(--text);background:var(--s3)}
+.fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fg .s2{grid-column:span 2}
+.fg .s3{grid-column:1/-1}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-family:var(--mono)}
+.req{color:var(--orange)}
+.ff input,.ff select,.ff textarea{width:100%;padding:9px 11px;background:var(--s2);border:1px solid var(--bd2);border-radius:var(--rs);color:var(--text);font-size:13px;transition:border-color .15s}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--green);outline:none}
+.ff input::placeholder,.ff textarea::placeholder{color:var(--text3)}
+.ff textarea{resize:vertical;min-height:60px}
+.ff select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Cpath d='M0 0l4 4 4-4z' fill='%23454870'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:24px}
+.ff select option{background:var(--s2)}
+.sec-bar{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:4px 0}
+.sec-line{flex:1;height:1px;background:var(--bd)}
+.sec-lbl2{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-family:var(--mono);white-space:nowrap}
+.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
+.mbtn{padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;transition:var(--tr);border:none}
+.mgh{background:var(--s2);border:1px solid var(--bd2);color:var(--text2)}.mgh:hover{border-color:var(--bd3);color:var(--text)}
+.mprim{background:var(--green);color:var(--bg)}.mprim:hover{background:#00FFB0;box-shadow:0 4px 16px var(--gn-glow)}
+.mdr{background:var(--rd-dim);border:1px solid var(--rd-mid);color:var(--red)}.mdr:hover{background:rgba(255,68,102,.2)}
+.del-name{background:var(--s2);border:1px solid var(--bd2);border-radius:var(--rs);padding:11px 14px;font-size:13px;font-weight:700;color:var(--text);margin:12px 0}
+.del-warn{font-size:12px;color:var(--text3);line-height:1.6}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s2);border:1px solid var(--bd2);border-radius:99px;padding:10px 22px;font-size:13px;font-weight:600;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:999;transition:transform .28s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.tok{border-color:rgba(0,229,160,.35);color:var(--green)}
+#toast.tfail{border-color:rgba(255,68,102,.35);color:var(--red)}
+@media(max-width:768px){.sidebar{display:none}.nav-pills{display:none}.main{padding:14px 12px 40px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb-logo">Room<em>Adda</em></div>
+  <div class="tb-sep"></div>
+  <span class="tb-page">Customers</span>
+  <div class="nav-pills">
+    <a class="npill" id="np-portal" href="#" target="_blank">👤 Portal</a>
+    <a class="npill" id="np-leads" href="#" target="_blank">🎯 Leads</a>
+    <a class="npill active" href="#">🤝 Customers</a>
+    <a class="npill" id="np-fin" href="#" target="_blank">💰 Finance</a>
+    <a class="npill" id="np-pg" href="#" target="_blank">🏠 PG</a>
+  </div>
+  <div class="tb-right">
+    <span id="last-sync"></span>
+    <span id="count-badge"></span>
+    <button class="tb-btn" onclick="loadData(false)">↻ Sync</button>
+    <button class="tb-btn prim" onclick="openAdd()">+ Add Customer</button>
+  </div>
+</div>
+
+<div class="page-shell">
+  <aside class="sidebar">
+    <div><span class="sb-lbl">Search name / phone</span><input class="sb-inp" id="f-name" placeholder="Name or number…" oninput="filter()"/></div>
+    <div><span class="sb-lbl">PG / Location</span><input class="sb-inp" id="f-pg" placeholder="Kalpavriksha…" oninput="filter()"/></div>
+    <div><span class="sb-lbl">Filter by PG</span><select class="sb-inp" id="f-pgf" onchange="filter()"><option value="All">All PGs</option></select></div>
+    <div class="sb-div"></div>
+    <div><span class="sb-lbl">Status</span>
+      <select class="sb-inp" id="f-status" onchange="filter()">
+        <option value="All">All statuses</option><option>Active</option><option>Vacated</option><option>Notice Period</option><option>Monthly</option>
+      </select>
+    </div>
+    <div><span class="sb-lbl">Room Type</span>
+      <select class="sb-inp" id="f-room" onchange="filter()">
+        <option value="All">All types</option><option>Single</option><option>Double</option><option>Triple</option>
+      </select>
+    </div>
+    <div><span class="sb-lbl">Stay Type</span>
+      <select class="sb-inp" id="f-stay" onchange="filter()">
+        <option value="All">All</option>
+        <option>Short-term (under 30 days)</option>
+        <option>Monthly</option>
+        <option>Long-term</option>
+      </select>
+    </div>
+    <div class="sb-div"></div>
+    <button class="sb-clear" onclick="clearF()">✕ Clear Filters</button>
+  </aside>
+
+  <main class="main">
+    <div class="kpi-row">
+      <div class="kpi kg"><div class="kpi-v" id="sv-total">—</div><div class="kpi-l">Total</div></div>
+      <div class="kpi kg"><div class="kpi-v" id="sv-active">—</div><div class="kpi-l">Active</div></div>
+      <div class="kpi ky"><div class="kpi-v" id="sv-notice">—</div><div class="kpi-l">Notice Period</div></div>
+      <div class="kpi kr"><div class="kpi-v" id="sv-vacated">—</div><div class="kpi-l">Vacated</div></div>
+      <div class="kpi kb"><div class="kpi-v" id="sv-monthly">—</div><div class="kpi-l">Monthly</div></div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-hdr">
+        <span class="tcard-title">Customer List</span>
+        <span class="tcard-sub" id="tbl-sub">All customers</span>
+      </div>
+      <div id="tbl-area"><div class="loader"><div class="spin"></div> Loading customers…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="mover" id="m-add" onclick="if(event.target===this)closeAdd()">
+  <div class="mbox add-m">
+    <div class="mhdr"><div class="mtitle" id="modal-title">Add Customer</div><button class="mcls" onclick="closeAdd()">✕</button></div>
+    <div class="fg">
+
+      <!-- ── GUEST INFO ── -->
+      <div class="sec-bar s3"><div class="sec-line"></div><span class="sec-lbl2">Guest Info</span><div class="sec-line"></div></div>
+      <div class="ff"><label>Name <span class="req">*</span></label><input id="a-name" placeholder="Jane Doe"/></div>
+      <div class="ff"><label>Phone <span class="req">*</span></label><input id="a-phone" type="tel" placeholder="9876543210"/></div>
+      <div class="ff"><label>Email</label><input id="a-email" type="email" placeholder="jane@example.com"/></div>
+      <div class="ff"><label>Emergency Contact Name</label><input id="a-ec-name" placeholder="Parent / Guardian"/></div>
+      <div class="ff"><label>Emergency Contact Phone</label><input id="a-ec-phone" type="tel" placeholder="9876543210"/></div>
+
+      <!-- ── ROOM DETAILS ── -->
+      <div class="sec-bar s3"><div class="sec-line"></div><span class="sec-lbl2">Room Details</span><div class="sec-line"></div></div>
+      <div class="ff"><label>PG / Location</label><input id="a-pg" placeholder="Kalpavriksha…"/></div>
+      <div class="ff"><label>Room Number</label><input id="a-room-num" placeholder="Room 17"/></div>
+      <div class="ff"><label>Sharing Type</label><select id="a-rtype"><option value="">—</option><option>Single</option><option>Double</option><option>Triple</option></select></div>
+      <div class="ff"><label>Check-in Date</label><input id="a-movein" type="date"/></div>
+      <div class="ff"><label>Stay Type</label><select id="a-stay"><option value="">—</option><option>Short-term (under 30 days)</option><option>Monthly</option><option>Long-term</option></select></div>
+      <div class="ff"><label>Check-in Status</label><select id="a-status"><option>Active</option><option>Vacated</option><option>Notice Period</option><option>Monthly</option></select></div>
+
+      <!-- ── FINANCIALS ── -->
+      <div class="sec-bar s3"><div class="sec-line"></div><span class="sec-lbl2">Financials</span><div class="sec-line"></div></div>
+      <div class="ff"><label>Monthly Rent (₹)</label><input id="a-rent" type="number" placeholder="8000"/></div>
+      <div class="ff"><label>Security Deposit / SD (₹)</label><input id="a-sd" type="number" placeholder="16000"/></div>
+      <div class="ff"><label>Duration</label><input id="a-duration" placeholder="3 months"/></div>
+      <div class="ff"><label>Total AMC (₹)</label><input id="a-amc" type="number" placeholder="24000"/></div>
+      <div class="ff"><label>Electricity</label><input id="a-elec" placeholder="Included / extra"/></div>
+      <div class="ff"><label>RoomAdda Collection (₹)</label><input id="a-collection" type="number" placeholder="0"/></div>
+      <div class="ff"><label>Paid (₹)</label><input id="a-paid" type="number" placeholder="0"/></div>
+      <div class="ff"><label>Commission (₹)</label><input id="a-commission" type="number" placeholder="0"/></div>
+      <div class="ff"><label>Payment Mode</label><select id="a-paymode">
+        <option value="">—</option>
+        <option>Cash</option>
+        <option>UPI</option>
+        <option>Bank Transfer</option>
+        <option>Cheque</option>
+        <option>Other</option>
+      </select></div>
+      <div class="ff"><label>Bank Statement Ref</label><input id="a-bank" placeholder="UTR / ref no."/></div>
+
+      <!-- ── NOTES ── -->
+      <div class="sec-bar s3"><div class="sec-line"></div><span class="sec-lbl2">Notes / Comments</span><div class="sec-line"></div></div>
+      <div class="ff s3"><label>Notes</label><textarea id="a-notes" placeholder="Any notes about this customer…"></textarea></div>
+    </div>
+    <div class="mfooter">
+      <button class="mbtn mgh" onclick="closeAdd()">Cancel</button>
+      <button class="mbtn mprim" id="modal-save-btn" onclick="submitSave()">Save Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="mover" id="m-del" onclick="if(event.target===this)closeDel()">
+  <div class="mbox sm del-m">
+    <div class="mhdr"><div class="mtitle" style="color:var(--red)">Delete Customer?</div><button class="mcls" onclick="closeDel()">✕</button></div>
+    <p class="del-warn">Permanently deleting:</p>
+    <div class="del-name" id="del-lbl"></div>
+    <p class="del-warn">This cannot be undone.</p>
+    <div class="mfooter"><button class="mbtn mgh" onclick="closeDel()">Cancel</button><button class="mbtn mdr" onclick="doDel()">Delete</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var ALL = [], SHOWN = [], EDIT_KEY = null, DEL = null, EDIT_MODE = false;
+
+// ── TABLE COLUMNS (all 19 sheet columns shown) ───────────────────
+// Customer name + phone = first 2 cols (hardcoded)
+// Then these additional cols:
+var COLS = [
+  {k:'inc_no',              lbl:'Inc No',      w:'60px',  et:'text'},
+  {k:'pg_name',             lbl:'Location',    w:'110px', et:'text'},
+  {k:'room_number',         lbl:'Room No',     w:'70px',  et:'text'},
+  {k:'room_type',           lbl:'Sharing',     w:'75px',  et:'select', opts:['Single','Double','Triple']},
+  {k:'move_in_date',        lbl:'Check-in',    w:'90px',  et:'text', isDate:true},
+  {k:'customer_status',     lbl:'Status',      w:'100px', et:'select', opts:['Active','Vacated','Notice Period','Monthly'], isStatus:true},
+  {k:'monthly_rent',        lbl:'Rent ₹',      w:'70px',  et:'text', isNum:true},
+  {k:'sd',                  lbl:'SD ₹',        w:'70px',  et:'text', isNum:true},
+  {k:'duration',            lbl:'Duration',    w:'75px',  et:'text'},
+  {k:'total_amc',           lbl:'Total AMC ₹', w:'85px',  et:'text', isNum:true},
+  {k:'electricity',         lbl:'Electricity', w:'80px',  et:'text'},
+  {k:'roomadda_collection', lbl:'RA Coll. ₹',  w:'80px',  et:'text', isNum:true},
+  {k:'paid',                lbl:'Paid ₹',      w:'70px',  et:'text', isNum:true},
+  {k:'commission',          lbl:'Comm. ₹',     w:'70px',  et:'text', isNum:true},
+  {k:'payment_mode',        lbl:'Pay Mode',    w:'80px',  et:'select', opts:['Cash','UPI','Bank Transfer','Cheque','Other']},
+  {k:'bank_statement',      lbl:'Bank Ref',    w:'80px',  et:'text'},
+  {k:'notes',               lbl:'Notes',       w:'90px',  et:'text', isNotes:true},
+];
+
+// ── DATE FORMATTER ────────────────────────────────────────────────
+function fmtDate(v) {
+  if (!v || v === '' || v === 'undefined' || v === 'null') return '—';
+  var sv = String(v).trim();
+  if (sv.match(/^\d{2}\/\d{2}\/\d{4}$/)) return sv;
+  if (sv.match(/^\d{4}-\d{2}-\d{2}T/)) {
+    var p = sv.split('T')[0].split('-');
+    return p[2] + '/' + p[1] + '/' + p[0];
+  }
+  if (sv.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    var p2 = sv.split('-');
+    return p2[2] + '/' + p2[1] + '/' + p2[0];
+  }
+  if (sv.match(/^\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}/)) return sv.split(/\s+/)[0];
+  if (sv.match(/^\d{2}-\d{2}-\d{4}\s+\d{1,2}:\d{2}/)) return sv.split(/\s+/)[0].replace(/-/g, '/');
+  return sv || '—';
+}
+
+function loadData(silent) {
+  if (!silent) g('tbl-area').innerHTML = '<div class="loader"><div class="spin"></div> Loading customers…</div>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.status !== 'success') { toast(res.message, false); return; }
+      ALL = res.data || []; SHOWN = ALL.slice();
+      populatePGF(); filter();
+      if (!silent) toast('✓ ' + ALL.length + ' customers loaded', true);
+      var el = g('last-sync'); if (el) el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    })
+    .withFailureHandler(function(e) { if (!silent) toast(e.message, false); })
+    .getCustomers();
+}
+
+window.onload = function(){
+  function getUrlParam(k){return new URLSearchParams(window.location.search).get(k)||''}
+  var _ROLE = '<?= roleParam ?>';
+  var _DEPT = '<?= deptParam ?>';
+
+  loadData(false);
+  setInterval(function(){loadData(true)},30000);
+
+  google.script.run
+    .withSuccessHandler(function(r){
+      if(!r||!r.success) return;
+      g('np-portal').href = r.urls.portal;
+      g('np-leads').href  = r.urls.leads;
+      g('np-fin').href    = r.urls.finance;
+      g('np-pg').href     = r.urls.pg;
+    })
+    .withFailureHandler(function(){})
+    .getNavUrls(_ROLE, _DEPT);
+
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAdd();closeDel();cancelEdit();}});
+};
+
+function populatePGF() {
+  var sel = g('f-pgf'), cur = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  var pgs = {};
+  ALL.forEach(function(r) { if (r.pg_name) pgs[r.pg_name] = 1; });
+  Object.keys(pgs).sort().forEach(function(pg) {
+    var o = document.createElement('option'); o.value = pg; o.textContent = pg; sel.appendChild(o);
+  });
+  if (cur && cur !== 'All') sel.value = cur;
+}
+
+function filter() {
+  var name   = g('f-name').value.trim().toLowerCase();
+  var pg     = g('f-pg').value.trim().toLowerCase();
+  var pgf    = g('f-pgf').value;
+  var status = g('f-status').value;
+  var room   = g('f-room').value;
+  var stay   = g('f-stay').value;
+
+  SHOWN = ALL.filter(function(r) {
+    if (name   && !(s(r.name).toLowerCase().includes(name) || s(r.phone).includes(name))) return false;
+    if (pg     && !s(r.pg_name).toLowerCase().includes(pg))                                return false;
+    if (pgf !== 'All' && s(r.pg_name) !== pgf)                                             return false;
+    if (status !== 'All' && s(r.customer_status).toLowerCase() !== status.toLowerCase())   return false;
+    if (room   !== 'All' && s(r.room_type).toLowerCase() !== room.toLowerCase())           return false;
+    if (stay   !== 'All' && s(r.stay_type) !== stay)                                       return false;
+    return true;
+  });
+  updateStats(SHOWN); renderTable(SHOWN);
+  g('count-badge').textContent = SHOWN.length === ALL.length
+    ? (ALL.length + ' customers')
+    : (SHOWN.length + ' / ' + ALL.length);
+  g('tbl-sub').textContent = SHOWN.length === ALL.length
+    ? 'All customers'
+    : (SHOWN.length + ' match filters');
+}
+
+function clearF() {
+  g('f-name').value = ''; g('f-pg').value = ''; g('f-pgf').value = 'All';
+  g('f-status').value = 'All'; g('f-room').value = 'All'; g('f-stay').value = 'All';
+  filter();
+}
+
+function updateStats(rows) {
+  var active = 0, notice = 0, vacated = 0, monthly = 0;
+  rows.forEach(function(r) {
+    var st = s(r.customer_status).toLowerCase();
+    if (st === 'active')             active++;
+    else if (st === 'notice period') notice++;
+    else if (st === 'vacated')       vacated++;
+    else if (st === 'monthly')       monthly++;
+  });
+  g('sv-total').textContent   = rows.length;
+  g('sv-active').textContent  = active;
+  g('sv-notice').textContent  = notice;
+  g('sv-vacated').textContent = vacated;
+  g('sv-monthly').textContent = monthly;
+}
+
+function renderTable(rows) {
+  var area = g('tbl-area');
+  if (!rows.length) {
+    area.innerHTML = '<div class="empty-s"><div style="font-size:38px">🔍</div><h3>No customers found</h3><p style="font-size:12px;margin-top:4px">Try adjusting your filters</p></div>';
+    return;
+  }
+  var ths = COLS.map(function(c) { return '<th style="width:' + c.w + '">' + c.lbl + '</th>'; }).join('');
+  var html = '<div class="tscroll"><table><thead><tr>'
+    + '<th style="width:130px">Customer</th>'
+    + '<th style="width:100px">Phone</th>'
+    + ths
+    + '<th style="width:70px;text-align:right">Actions</th>'
+    + '</tr></thead><tbody>';
+  rows.forEach(function(r) {
+    var key = mk(r.name, r.phone);
+    html += EDIT_KEY === key ? buildEdit(r) : buildView(r, key);
+  });
+  html += '</tbody></table></div>';
+  area.innerHTML = html;
+}
+
+function buildView(r, key) {
+  var cells = COLS.map(function(c) {
+    var v = r[c.k];
+    if (c.isStatus) return '<td>' + stpill(v) + '</td>';
+    if (c.k === 'room_type') return '<td>' + rtpill(v) + '</td>';
+    if (c.isNotes) return '<td><div class="note-cell" title="' + esc(v || '') + '">' + esc(v || '—') + '</div></td>';
+    if (c.isDate)  return '<td style="font-family:var(--mono);font-size:11px;color:var(--text2)">' + esc(fmtDate(v)) + '</td>';
+    if (c.isNum)   return '<td class="num-cell">' + esc(v ? '₹' + v : '—') + '</td>';
+    return '<td style="font-size:11px;color:var(--text2)">' + esc(v || '—') + '</td>';
+  }).join('');
+
+  var nE = esc(r.name), pE = esc(r.phone);
+  var ph = s(r.phone).replace(/\.0$/, '');
+  var sr = r._sheetRow || 0;
+
+  return '<tr>'
+    + '<td><div class="cust-n">' + esc(r.name) + '</div><div class="cust-sub">' + esc(r.email || '') + '</div></td>'
+    + '<td style="font-family:var(--mono);font-size:11px;color:var(--text2)">' + esc(ph || '—') + '</td>'
+    + cells
+    + '<td style="text-align:right;padding-right:8px"><div class="ra">'
+    + '<button class="ra-b ra-e" onclick="startEdit(\'' + nE + '\',\'' + pE + '\')" title="Edit">✎</button>'
+    + '<button class="ra-b ra-d" onclick="askDel(\'' + nE + '\',\'' + pE + '\',' + sr + ')" title="Delete">✕</button>'
+    + '</div></td></tr>';
+}
+
+function buildEdit(r) {
+  var cells = COLS.map(function(c) {
+    var v = esc(r[c.k] || '');
+    if (c.et === 'select') {
+      var opts = c.opts.map(function(o) { return '<option' + (r[c.k] === o ? ' selected' : '') + '>' + o + '</option>'; }).join('');
+      return '<td><select class="ei-s" id="e-' + c.k + '">' + opts + '</select></td>';
+    }
+    return '<td><input class="ei" id="e-' + c.k + '" type="' + c.et + '" value="' + v + '"/></td>';
+  }).join('');
+
+  var nE = esc(r.name), pE = esc(r.phone);
+  return '<tr class="erow">'
+    + '<td colspan="2"><strong>' + nE + '</strong></td>'
+    + cells
+    + '<td style="text-align:right;padding-right:8px">'
+    + '<div class="ra" style="opacity:1;flex-direction:column;gap:3px">'
+    + '<button class="ei-save" onclick="saveEdit(\'' + nE + '\',\'' + pE + '\')">✓ Save</button>'
+    + '<button class="ei-cnc" onclick="cancelEdit()">Cancel</button>'
+    + '</div></td></tr>';
+}
+
+function startEdit(n, p) {
+  EDIT_KEY = mk(n, p); renderTable(SHOWN);
+  setTimeout(function() { var el = g('e-pg_name'); if (el) el.focus(); }, 40);
+}
+function cancelEdit() { EDIT_KEY = null; renderTable(SHOWN); }
+function saveEdit(n, p) {
+  var payload = {name: n, phone: p};
+  COLS.forEach(function(c) { var el = g('e-' + c.k); if (el) payload[c.k] = el.value; });
+  toast('Saving…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (r.status !== 'success') { toast(r.message, false); return; }
+      var idx = ALL.findIndex(function(x) { return mk(x.name, x.phone) === mk(n, p); });
+      if (idx !== -1) Object.assign(ALL[idx], payload);
+      EDIT_KEY = null; filter(); toast('✓ Saved', true);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .updateCustomer(payload);
+}
+
+function openAdd() {
+  EDIT_MODE = false;
+  g('modal-title').textContent = 'Add Customer';
+  g('modal-save-btn').textContent = 'Save Customer';
+  clearForm();
+  ['a-name', 'a-phone'].forEach(function(id) { g(id).removeAttribute('readonly'); });
+  g('m-add').classList.add('open');
+}
+function closeAdd() { g('m-add').classList.remove('open'); clearForm(); }
+function clearForm() {
+  ['a-name','a-phone','a-email','a-ec-name','a-ec-phone',
+   'a-pg','a-room-num','a-movein','a-notes',
+   'a-rent','a-sd','a-duration','a-amc','a-elec',
+   'a-collection','a-paid','a-commission','a-bank'].forEach(function(id) {
+    var el = g(id); if (el) el.value = '';
+  });
+  g('a-rtype').value = ''; g('a-status').value = 'Active';
+  g('a-stay').value = ''; g('a-paymode').value = '';
+}
+
+function submitSave() {
+  var payload = {
+    name:                    g('a-name').value.trim(),
+    phone:                   g('a-phone').value.trim(),
+    email:                   g('a-email').value.trim(),
+    emergency_contact_name:  g('a-ec-name').value.trim(),
+    emergency_contact_phone: g('a-ec-phone').value.trim(),
+    pg_name:                 g('a-pg').value.trim(),
+    room_number:             g('a-room-num').value.trim(),
+    room_type:               g('a-rtype').value,
+    move_in_date:            g('a-movein').value,
+    stay_type:               g('a-stay').value,
+    customer_status:         g('a-status').value,
+    monthly_rent:            g('a-rent').value.trim(),
+    sd:                      g('a-sd').value.trim(),
+    duration:                g('a-duration').value.trim(),
+    total_amc:               g('a-amc').value.trim(),
+    electricity:             g('a-elec').value.trim(),
+    roomadda_collection:     g('a-collection').value.trim(),
+    paid:                    g('a-paid').value.trim(),
+    commission:              g('a-commission').value.trim(),
+    payment_mode:            g('a-paymode').value,
+    bank_statement:          g('a-bank').value.trim(),
+    notes:                   g('a-notes').value.trim()
+  };
+  if (!payload.name || !payload.phone) { toast('Name and Phone are required', false); return; }
+  toast('Saving…', true);
+  var fn = EDIT_MODE ? 'updateCustomer' : 'addCustomer';
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (r.status !== 'success') { toast(r.message, false); return; }
+      closeAdd(); toast(EDIT_MODE ? '✓ Updated' : '✓ Customer added', true);
+      setTimeout(function() { loadData(true); }, 700);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    [fn](payload);
+}
+
+// ── DELETE ────────────────────────────────────────────────────────
+function askDel(n, p, sheetRow) {
+  DEL = {name: n, phone: p, _sheetRow: sheetRow || 0};
+  g('del-lbl').textContent = n + ' — ' + p;
+  g('m-del').classList.add('open');
+}
+function closeDel() { g('m-del').classList.remove('open'); DEL = null; }
+function doDel() {
+  if (!DEL) return;
+  var d = DEL; closeDel(); toast('Deleting…', true);
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (r.status !== 'success') { toast(r.message, false); return; }
+      ALL = ALL.filter(function(x) { return mk(x.name, x.phone) !== mk(d.name, d.phone); });
+      populatePGF(); filter(); toast('✓ Deleted', true);
+    })
+    .withFailureHandler(function(e) { toast(e.message, false); })
+    .deleteCustomer(d);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function mk(n, p) { return s(n).trim().toLowerCase() + '||' + s(p).trim(); }
+function s(v)     { return (v || '').toString(); }
+function esc(v)   { return s(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function g(id)    { return document.getElementById(id); }
+
+function stpill(v) {
+  if (!v || v === 'true' || v === 'false') v = 'Active';
+  var m = {active:'pa', vacated:'pv', 'notice period':'pnp', monthly:'pm'};
+  return '<span class="pill ' + (m[s(v).toLowerCase()] || 'pa') + '">' + esc(v) + '</span>';
+}
+function rtpill(v) {
+  if (!v) return '—';
+  var m = {single:'ps', double:'pd', triple:'pt'};
+  return '<span class="pill ' + (m[s(v).toLowerCase()] || '') + '">' + esc(v) + '</span>';
+}
+function toast(msg, ok) {
+  var t = g('toast'); t.textContent = msg;
+  t.className = ok ? 'tok' : 'tfail';
+  t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+</script>
+</body>
+</html>
